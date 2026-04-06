@@ -1,5 +1,4 @@
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
 const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
@@ -10,9 +9,19 @@ const Navbar = () => {
   const { user, profile, logout, loading } = useAuth();
   const role = profile?.role || null;
 
-  function handleStylistsComingSoon(event) {
+  function scrollToHowItWorks() {
+    const section = document.getElementById('how-it-works');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function handleHowItWorksNav(event) {
     event.preventDefault();
-    toast.info('Find a Stylist is launching soon. Join early access for updates.');
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+    window.setTimeout(scrollToHowItWorks, 80);
   }
 
   function handleOpenWaitlist(event) {
@@ -21,8 +30,8 @@ const Navbar = () => {
       navigate('/');
     }
     window.setTimeout(() => {
-      window.dispatchEvent(new Event(WAITLIST_MODAL_EVENT));
-    }, 0);
+      window.dispatchEvent(new CustomEvent(WAITLIST_MODAL_EVENT, { detail: { type: 'client' } }));
+    }, 80);
   }
 
   return (
@@ -48,13 +57,17 @@ const Navbar = () => {
               {role === 'client' ? (
                 <>
                   <NavLink
-                    to="/stylists"
-                    onClick={handleStylistsComingSoon}
+                    to="/#how-it-works"
+                    onClick={handleHowItWorksNav}
                     className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
                   >
                     Find a Stylist
                   </NavLink>
-                  <NavLink to="/buddies" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
+                  <NavLink
+                    to="/#how-it-works"
+                    onClick={handleHowItWorksNav}
+                    className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
+                  >
                     Find a Buddy
                   </NavLink>
                   <NavLink to="/dashboard" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'border border-riotBorder text-riotTextSecondary hover:text-riotText'}`}>
@@ -69,13 +82,17 @@ const Navbar = () => {
           ) : (
             <>
               <NavLink
-                to="/stylists"
-                onClick={handleStylistsComingSoon}
+                to="/#how-it-works"
+                onClick={handleHowItWorksNav}
                 className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
               >
                 Find a Stylist
               </NavLink>
-              <NavLink to="/buddies" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
+              <NavLink
+                to="/#how-it-works"
+                onClick={handleHowItWorksNav}
+                className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
+              >
                 Find a Buddy
               </NavLink>
               <button

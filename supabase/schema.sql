@@ -70,13 +70,26 @@ create table if not exists stylist_applications (
 );
 
 create table if not exists waitlist (
-  id uuid primary key default gen_random_uuid(),
+  id uuid default gen_random_uuid() primary key,
   email text unique not null,
-  created_at timestamp default now()
+  name text,
+  city text,
+  experience text,
+  type text check (type in ('client', 'stylist')) not null,
+  created_at timestamptz default now()
 );
 
 alter table waitlist alter column id set default gen_random_uuid();
-alter table waitlist drop column if exists city;
+alter table waitlist add column if not exists name text;
+alter table waitlist add column if not exists city text;
+alter table waitlist add column if not exists experience text;
+alter table waitlist add column if not exists type text;
+alter table waitlist alter column created_at type timestamptz using created_at at time zone 'UTC';
+alter table waitlist alter column created_at set default now();
+update waitlist set type = 'client' where type is null;
+alter table waitlist alter column type set not null;
+alter table waitlist drop constraint if exists waitlist_type_check;
+alter table waitlist add constraint waitlist_type_check check (type in ('client', 'stylist'));
 
 alter table users add column if not exists role text;
 alter table users add column if not exists neighborhood text;

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
-const ctaChips = ['No subscription', 'Any store', 'Real stylists'];
+const ctaChips = ['No subscription', 'Any store', 'Launching soon'];
 
 const options = [
   {
@@ -49,20 +49,22 @@ export default function Home() {
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
-                to="/stylists"
+                to="/signup"
                 className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
               >
-                Book a Stylist
+                Get Early Access
                 <ArrowRight size={16} />
               </Link>
 
               <Link
-                to="/buddies"
+                to="/apply"
                 className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 bg-white px-6 py-3 text-[14px] font-semibold text-[#171717] transition duration-150 hover:border-[#1f1f1f]/20 hover:bg-[#fff4f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
               >
-                Find a Buddy
+                Apply as a Stylist
               </Link>
             </div>
+
+            <p className="mt-3 text-[13px] font-medium text-[#7a7a7a]">Join 200+ people already on the waitlist</p>
 
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {ctaChips.map((chip) => (

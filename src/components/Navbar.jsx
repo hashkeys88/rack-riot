@@ -1,9 +1,15 @@
 import { Link, NavLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user, profile, logout, loading } = useAuth();
   const role = profile?.role || null;
+
+  function handleStylistsComingSoon(event) {
+    event.preventDefault();
+    toast.info('Find a Stylist is launching soon. Join early access for updates.');
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-riotBorder bg-white shadow-[0_1px_0_#E8E8E8]">
@@ -27,7 +33,11 @@ const Navbar = () => {
               ) : null}
               {role === 'client' ? (
                 <>
-                  <NavLink to="/stylists" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
+                  <NavLink
+                    to="/stylists"
+                    onClick={handleStylistsComingSoon}
+                    className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
+                  >
                     Find a Stylist
                   </NavLink>
                   <NavLink to="/buddies" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
@@ -44,7 +54,11 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <NavLink to="/stylists" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
+              <NavLink
+                to="/stylists"
+                onClick={handleStylistsComingSoon}
+                className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
+              >
                 Find a Stylist
               </NavLink>
               <NavLink to="/buddies" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>

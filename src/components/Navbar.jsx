@@ -1,14 +1,28 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 
+const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
+
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, profile, logout, loading } = useAuth();
   const role = profile?.role || null;
 
   function handleStylistsComingSoon(event) {
     event.preventDefault();
     toast.info('Find a Stylist is launching soon. Join early access for updates.');
+  }
+
+  function handleOpenWaitlist(event) {
+    event.preventDefault();
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event(WAITLIST_MODAL_EVENT));
+    }, 0);
   }
 
   return (
@@ -64,12 +78,13 @@ const Navbar = () => {
               <NavLink to="/buddies" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}>
                 Find a Buddy
               </NavLink>
-              <Link to="/login" className="rounded-md border border-riotBorder px-3 py-1.5 text-[14px] font-semibold text-riotText transition hover:bg-riotBgSecondary">
-                Log In
-              </Link>
-              <Link to="/signup" className="rounded-md bg-riotAccent px-3 py-1.5 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover">
-                Get Started
-              </Link>
+              <button
+                type="button"
+                onClick={handleOpenWaitlist}
+                className="rounded-md bg-riotAccent px-3 py-1.5 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover"
+              >
+                Get Early Access
+              </button>
             </>
           )}
         </div>

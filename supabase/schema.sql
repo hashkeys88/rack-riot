@@ -1,4 +1,5 @@
 create extension if not exists "uuid-ossp";
+create extension if not exists pgcrypto;
 
 create table if not exists users (
   id uuid primary key default uuid_generate_v4(),
@@ -40,9 +41,9 @@ create table if not exists sessions (
 create table if not exists session_members (
   id uuid primary key default uuid_generate_v4(),
   session_id uuid references sessions(id),
-  user_id uuid references users(id),
-  email text,
-  status text check (status in ('invited', 'confirmed', 'declined'))
+  email text not null,
+  status text default 'invited' check (status in ('invited', 'accepted', 'declined')),
+  created_at timestamp default now()
 );
 
 create table if not exists buddy_matches (
@@ -50,7 +51,7 @@ create table if not exists buddy_matches (
   user_a uuid references users(id),
   user_b uuid references users(id),
   match_score int,
-  status text check (status in ('pending', 'accepted', 'declined')),
+  status text default 'pending' check (status in ('pending', 'accepted', 'declined')),
   created_at timestamp default now()
 );
 
@@ -69,11 +70,13 @@ create table if not exists stylist_applications (
 );
 
 create table if not exists waitlist (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   email text unique not null,
-  city text,
   created_at timestamp default now()
 );
+
+alter table waitlist alter column id set default gen_random_uuid();
+alter table waitlist drop column if exists city;
 
 alter table users add column if not exists role text;
 alter table users add column if not exists neighborhood text;
@@ -89,16 +92,5 @@ alter table stylists add column if not exists rate_expectation text;
 alter table stylists add column if not exists neighborhood text;
 alter table stylist_applications add column if not exists email text;
 
-alter table users enable row level security;
 alter table sessions enable row level security;
 alter table buddy_matches enable row level security;
-
-drop policy if exists "Users can view own profile" on users;
-create policy "Users can view own profile"
-  on users for select
-  using (auth.uid() = id);
-
-drop policy if exists "Users can update own profile" on users;
-create policy "Users can update own profile"
-  on users for update
-  using (auth.uid() = id);

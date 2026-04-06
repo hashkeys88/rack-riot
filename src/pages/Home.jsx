@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const ctaChips = ['No subscription', 'Any store', 'Launching soon'];
+const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
 
 const options = [
   {
@@ -30,6 +33,64 @@ const options = [
 ];
 
 export default function Home() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [waitlistError, setWaitlistError] = useState('');
+  const [waitlistJoined, setWaitlistJoined] = useState(false);
+
+  useEffect(() => {
+    function handleOpenWaitlist() {
+      setWaitlistError('');
+      setWaitlistOpen(true);
+    }
+
+    window.addEventListener(WAITLIST_MODAL_EVENT, handleOpenWaitlist);
+    return () => window.removeEventListener(WAITLIST_MODAL_EVENT, handleOpenWaitlist);
+  }, []);
+
+  function openWaitlistModal() {
+    setWaitlistError('');
+    setWaitlistOpen(true);
+  }
+
+  function closeWaitlistModal() {
+    if (submitting) return;
+    setWaitlistOpen(false);
+  }
+
+  async function handleWaitlistSubmit(event) {
+    event.preventDefault();
+    const normalizedEmail = email.toLowerCase().trim();
+    if (!normalizedEmail) {
+      setWaitlistError('Please enter your email.');
+      return;
+    }
+
+    setSubmitting(true);
+    setWaitlistError('');
+
+    try {
+      const { error } = await supabase.from('waitlist').insert({ email: normalizedEmail });
+      if (error) {
+        const message = String(error.message || '').toLowerCase();
+        if (message.includes('duplicate') || message.includes('unique')) {
+          setWaitlistError("You're already on the list!");
+          return;
+        }
+        throw error;
+      }
+
+      setWaitlistJoined(true);
+      setWaitlistOpen(false);
+      setEmail('');
+    } catch {
+      setWaitlistError('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <>
       <section className="relative overflow-hidden bg-[#fcf7f2] pb-14 pt-4 text-[#161616] md:pb-16">
@@ -47,24 +108,31 @@ export default function Home() {
               Book a personal stylist or find your shopping crew. In person, at any store, with guidance that actually fits your vibe.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link
-                to="/signup"
-                className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
-              >
-                Get Early Access
-                <ArrowRight size={16} />
-              </Link>
+            {waitlistJoined ? (
+              <p className="mt-9 text-[15px] font-semibold text-[#d24747]">You're in 🎉 We'll reach out when we launch.</p>
+            ) : (
+              <>
+                <div className="mt-9 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={openWaitlistModal}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
+                  >
+                    Get Early Access
+                    <ArrowRight size={16} />
+                  </button>
 
-              <Link
-                to="/apply"
-                className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 bg-white px-6 py-3 text-[14px] font-semibold text-[#171717] transition duration-150 hover:border-[#1f1f1f]/20 hover:bg-[#fff4f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
-              >
-                Apply as a Stylist
-              </Link>
-            </div>
+                  <Link
+                    to="/apply"
+                    className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 bg-white px-6 py-3 text-[14px] font-semibold text-[#171717] transition duration-150 hover:border-[#1f1f1f]/20 hover:bg-[#fff4f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
+                  >
+                    Apply as a Stylist
+                  </Link>
+                </div>
 
-            <p className="mt-3 text-[13px] font-medium text-[#7a7a7a]">Join 200+ people already on the waitlist</p>
+                <p className="mt-3 text-[13px] font-medium text-[#7a7a7a]">Join 200+ people already on the waitlist</p>
+              </>
+            )}
 
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {ctaChips.map((chip) => (
@@ -135,6 +203,46 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {waitlistOpen ? (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/35 px-4">
+          <div className="w-full max-w-md rounded-[28px] border border-[#1f1f1f]/10 bg-white p-6 shadow-[0_28px_80px_rgba(63,33,24,0.16)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">Founding members</p>
+                <h2 className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#161616]">Get early access</h2>
+                <p className="mt-2 text-[15px] leading-relaxed text-[#5d5d5d]">Be first to hear when Rack Riot opens in your city.</p>
+              </div>
+              <button
+                type="button"
+                onClick={closeWaitlistModal}
+                className="rounded-full border border-[#1f1f1f]/10 p-2 text-[#5d5d5d] transition hover:bg-[#fff4f1]"
+                aria-label="Close modal"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleWaitlistSubmit} className="mt-6 space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="Enter your email"
+                className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+              />
+              {waitlistError ? <p className="text-[13px] font-medium text-[#d24747]">{waitlistError}</p> : null}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex w-full items-center justify-center rounded-full bg-[#ff4d4d] px-5 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {submitting ? 'Saving...' : 'Count me in'}
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

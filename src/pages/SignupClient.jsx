@@ -74,6 +74,13 @@ export default function SignupClient() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [attemptedNext, setAttemptedNext] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+    confirmPassword: false
+  });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -85,7 +92,26 @@ export default function SignupClient() {
   });
 
   const passwordStrength = useMemo(() => strengthForPassword(formData.password), [formData.password]);
-  const passwordMismatch = Boolean(formData.confirmPassword) && formData.password !== formData.confirmPassword;
+  const trimmedName = formData.name.trim();
+  const trimmedEmail = formData.email.trim();
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
+  const passwordValid = formData.password.length >= 8;
+  const showConfirmError = (touched.confirmPassword || attemptedNext) && Boolean(formData.confirmPassword || attemptedNext);
+  const passwordMismatch = showConfirmError && formData.password !== formData.confirmPassword;
+  const stepOneValid =
+    Boolean(trimmedName) &&
+    emailValid &&
+    passwordValid &&
+    Boolean(formData.confirmPassword) &&
+    formData.password === formData.confirmPassword;
+
+  function inputClasses(hasError = false) {
+    return `w-full rounded-md border bg-white px-3 py-2 text-riotText placeholder:text-riotTextMuted transition focus:outline-none focus:ring-2 ${
+      hasError
+        ? 'border-red-300 focus:border-red-400 focus:ring-red-100'
+        : 'border-riotBorder focus:border-riotAccent focus:ring-riotAccent/10'
+    }`;
+  }
 
   function toggleStyleTag(tag) {
     setFormData((prev) => ({
@@ -102,15 +128,15 @@ export default function SignupClient() {
   }
 
   function canContinueStepOne() {
-    if (!formData.name.trim()) {
-      setError('Please enter your full name');
+    if (!trimmedName) {
+      setError('Please enter your first name');
       return false;
     }
-    if (!formData.email.trim()) {
+    if (!trimmedEmail) {
       setError('Please enter your email');
       return false;
     }
-    if (!formData.email.includes('@')) {
+    if (!emailValid) {
       setError('Please enter a valid email');
       return false;
     }
@@ -135,7 +161,10 @@ export default function SignupClient() {
 
   function nextStep() {
     setError(null);
-    if (step === 1 && !canContinueStepOne()) return;
+    if (step === 1) {
+      setAttemptedNext(true);
+      if (!canContinueStepOne()) return;
+    }
     setStep((prev) => Math.min(3, prev + 1));
   }
 
@@ -257,23 +286,78 @@ export default function SignupClient() {
         <StepIndicator step={step} total={3} />
 
         {step === 1 ? (
-          <div className="mt-4 space-y-4">
+          <div className="mt-4 space-y-5">
             <p className="text-lg font-semibold">Step 1: Account Details</p>
-            <input value={formData.name} placeholder="Full name" onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))} className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
-            <input
-              value={formData.email}
-              type="email"
-              placeholder="Email"
-              onChange={(event) => {
-                setFormData((prev) => ({ ...prev, email: event.target.value }));
-                if (error) setError(null);
-              }}
-              className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2"
-            />
-            <input value={formData.password} type="password" placeholder="Password" onChange={(event) => setFormData((prev) => ({ ...prev, password: event.target.value }))} className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
-            {formData.password ? <p className={`text-xs ${passwordStrength.tone}`}>Strength: {passwordStrength.label}</p> : null}
-            <input value={formData.confirmPassword} type="password" placeholder="Confirm password" onChange={(event) => setFormData((prev) => ({ ...prev, confirmPassword: event.target.value }))} className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
-            {passwordMismatch ? <p className="text-xs text-red-300">Passwords do not match</p> : null}
+
+            <div className="space-y-1.5">
+              <label htmlFor="signup-name" className="block text-sm font-medium text-riotText">
+                First Name
+              </label>
+              <input
+                id="signup-name"
+                value={formData.name}
+                placeholder="Raj"
+                autoComplete="given-name"
+                onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
+                onChange={(event) => setFormData((prev) => ({ ...prev, name: event.target.value }))}
+                className={inputClasses()}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="signup-email" className="block text-sm font-medium text-riotText">
+                Email
+              </label>
+              <input
+                id="signup-email"
+                value={formData.email}
+                type="email"
+                placeholder="raj@gmail.com"
+                autoComplete="email"
+                onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
+                onChange={(event) => {
+                  setFormData((prev) => ({ ...prev, email: event.target.value }));
+                  if (error) setError(null);
+                }}
+                className={inputClasses(touched.email && trimmedEmail && !emailValid)}
+              />
+              {touched.email && trimmedEmail && !emailValid ? <p className="text-xs text-red-300">Please enter a valid email</p> : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="signup-password" className="block text-sm font-medium text-riotText">
+                Password
+              </label>
+              <input
+                id="signup-password"
+                value={formData.password}
+                type="password"
+                placeholder="Enter your password"
+                autoComplete="new-password"
+                onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
+                onChange={(event) => setFormData((prev) => ({ ...prev, password: event.target.value }))}
+                className={inputClasses(touched.password && formData.password && !passwordValid)}
+              />
+              <p className="text-xs text-riotTextSecondary">Use at least 8 characters.</p>
+              {formData.password ? <p className={`text-xs ${passwordStrength.tone}`}>Password strength: {passwordStrength.label}</p> : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="signup-confirm-password" className="block text-sm font-medium text-riotText">
+                Confirm Password
+              </label>
+              <input
+                id="signup-confirm-password"
+                value={formData.confirmPassword}
+                type="password"
+                placeholder="Re-enter your password"
+                autoComplete="new-password"
+                onBlur={() => setTouched((prev) => ({ ...prev, confirmPassword: true }))}
+                onChange={(event) => setFormData((prev) => ({ ...prev, confirmPassword: event.target.value }))}
+                className={inputClasses(passwordMismatch)}
+              />
+              {passwordMismatch ? <p className="text-xs text-red-300">Passwords do not match</p> : null}
+            </div>
           </div>
         ) : null}
 
@@ -322,12 +406,14 @@ export default function SignupClient() {
           </p>
         ) : null}
 
-        <div className="mt-8 flex justify-between">
-          <button onClick={previousStep} disabled={step === 1 || loading} className="rounded-md border border-riotBorder px-4 py-2 text-[14px] font-semibold disabled:opacity-40">
-            Back
-          </button>
+        <div className="mt-8 flex justify-end gap-3">
+          {step > 1 ? (
+            <button onClick={previousStep} disabled={loading} className="rounded-md border border-riotBorder px-4 py-2 text-[14px] font-semibold text-riotText disabled:opacity-40">
+              Back
+            </button>
+          ) : null}
           {step < 3 ? (
-            <button onClick={nextStep} disabled={loading} className="rounded-md bg-riotAccent px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover disabled:opacity-60">
+            <button onClick={nextStep} disabled={step === 1 ? !stepOneValid || loading : loading} className="rounded-md bg-riotAccent px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover disabled:cursor-not-allowed disabled:opacity-60">
               Next
             </button>
           ) : (

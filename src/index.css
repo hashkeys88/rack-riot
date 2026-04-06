@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --bg-card: #ffffff;
+  --border: #e8e8e8;
+  --border-dark: #d0d0d0;
+  --text-primary: #121212;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --accent: #ff4d4d;
+  --accent-hover: #e03e3e;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+}
+
+* {
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  @apply bg-riotBg text-riotText font-body;
+  font-size: 14px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0;
+  color: var(--text-primary);
+}
+
+p,
+label,
+input,
+select,
+textarea,
+button,
+a,
+span {
+  font-family: 'DM Sans', sans-serif;
+}
+
+input,
+select,
+textarea {
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #f5f0e8;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #121212;
+  box-shadow: 0 0 0 3px rgba(18, 18, 18, 0.08);
+  outline: none;
+}
+
+.hero-grain {
+  background: #ffffff;
+  position: relative;
+}
+
+.hero-grain::after {
+  content: none;
+}
+
+.riot-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.riot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.bg-black\/40,
+.bg-black\/30,
+.bg-black\/20,
+.bg-black\/70,
+.bg-white\/5,
+.bg-white\/10 {
+  background-color: #ffffff !important;
+}
+
+.border-white\/10,
+.border-white\/15,
+.border-white\/20 {
+  border-color: var(--border) !important;
+}
+
+.text-riotText\/80,
+.text-riotText\/85,
+.text-riotText\/90 {
+  color: var(--text-secondary) !important;
+}
+
+.text-riotText\/70,
+.text-riotText\/75,
+.text-riotText\/60 {
+  color: var(--text-muted) !important;
+}
+
+.bg-riotAccent {
+  background-color: var(--accent) !important;
+}
+
+.bg-riotAccent:hover {
+  background-color: var(--accent-hover) !important;
+}
+
+.bg-riotAccent.text-black,
+.text-black {
+  color: #ffffff !important;
+}
+
+button,
+.rounded-md {
+  border-radius: 8px;
+}

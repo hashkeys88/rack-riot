@@ -224,7 +224,7 @@ export default function Home() {
             </h1>
 
             <p className="mt-6 max-w-[560px] text-[18px] leading-relaxed text-[#4d4d4d]">
-              Book a personal stylist or find your shopping crew. In person, at any store, with guidance that actually fits your vibe.
+              Skip the algorithm. Book a real stylist, at any store, in person.
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">

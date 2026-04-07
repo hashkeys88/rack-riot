@@ -236,7 +236,6 @@ export default function Home() {
                 >
                   Get Early Access
                 </button>
-                <p className="mt-1 text-xs text-gray-400">I want to get styled</p>
               </div>
 
               <div className="flex flex-col items-center">
@@ -247,7 +246,6 @@ export default function Home() {
                 >
                   Apply as a Stylist
                 </button>
-                <p className="mt-1 text-xs text-gray-400">I'm a stylist</p>
               </div>
             </div>
 

@@ -9,20 +9,6 @@ const Navbar = () => {
   const { user, profile, logout, loading } = useAuth();
   const role = profile?.role || null;
 
-  function scrollToHowItWorks() {
-    const section = document.getElementById('how-it-works');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  function handleHowItWorksNav(event) {
-    event.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/');
-    }
-    window.setTimeout(scrollToHowItWorks, 80);
-  }
 
   function handleOpenWaitlist(event) {
     event.preventDefault();
@@ -55,25 +41,9 @@ const Navbar = () => {
                 </NavLink>
               ) : null}
               {role === 'client' ? (
-                <>
-                  <NavLink
-                    to="/#how-it-works"
-                    onClick={handleHowItWorksNav}
-                    className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
-                  >
-                    Find a Stylist
-                  </NavLink>
-                  <NavLink
-                    to="/#how-it-works"
-                    onClick={handleHowItWorksNav}
-                    className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
-                  >
-                    Find a Buddy
-                  </NavLink>
-                  <NavLink to="/dashboard" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'border border-riotBorder text-riotTextSecondary hover:text-riotText'}`}>
-                    Dashboard
-                  </NavLink>
-                </>
+                <NavLink to="/dashboard" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'border border-riotBorder text-riotTextSecondary hover:text-riotText'}`}>
+                  Dashboard
+                </NavLink>
               ) : null}
               <button onClick={logout} className="rounded-md px-3 py-1.5 text-[14px] font-semibold text-riotTextSecondary transition hover:text-riotText hover:underline">
                 Log Out
@@ -81,26 +51,13 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <NavLink
-                to="/#how-it-works"
-                onClick={handleHowItWorksNav}
-                className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
-              >
-                Find a Stylist
-              </NavLink>
-              <NavLink
-                to="/#how-it-works"
-                onClick={handleHowItWorksNav}
-                className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'text-riotTextSecondary hover:text-riotText'}`}
-              >
-                Find a Buddy
-              </NavLink>
+              {/* TODO: Add back "Find a Stylist", "Find a Buddy" as text links and "Log In" button once stylists are onboarded and features are live */}
               <button
                 type="button"
                 onClick={handleOpenWaitlist}
                 className="rounded-md bg-riotAccent px-3 py-1.5 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover"
               >
-                Get Early Access
+                Book a Stylist
               </button>
             </>
           )}

@@ -234,7 +234,7 @@ export default function Home() {
                   onClick={() => openWaitlistModal('client')}
                   className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
                 >
-                  Get Early Access
+                  Book a Stylist
                 </button>
               </div>
 
@@ -249,7 +249,6 @@ export default function Home() {
               </div>
             </div>
 
-            <p className="mt-3 text-[13px] font-medium text-[#7a7a7a]">Be among the first when we launch in your city.</p>
 
             <div className="mt-7 flex flex-wrap items-center gap-2.5">
               {ctaChips.map((chip) => (

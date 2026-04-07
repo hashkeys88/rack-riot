@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 const ctaChips = ['No subscription', 'Any store', 'Launching soon'];
@@ -227,23 +227,28 @@ export default function Home() {
               Skip the algorithm. Book a real stylist, at any store, in person.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => openWaitlistModal('client')}
-                className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
-              >
-                Get Early Access
-                <ArrowRight size={16} />
-              </button>
+            <div className="mt-9 flex flex-wrap items-start gap-3">
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => openWaitlistModal('client')}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#ff4d4d] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
+                >
+                  Get Early Access
+                </button>
+                <p className="mt-1 text-xs text-gray-400">I want to get styled</p>
+              </div>
 
-              <button
-                type="button"
-                onClick={() => openWaitlistModal('stylist')}
-                className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 bg-white px-6 py-3 text-[14px] font-semibold text-[#171717] transition duration-150 hover:border-[#1f1f1f]/20 hover:bg-[#fff4f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
-              >
-                Apply as a Stylist
-              </button>
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => openWaitlistModal('stylist')}
+                  className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 bg-white px-6 py-3 text-[14px] font-semibold text-[#171717] transition duration-150 hover:border-[#1f1f1f]/20 hover:bg-[#fff4f1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcf7f2]"
+                >
+                  Apply as a Stylist
+                </button>
+                <p className="mt-1 text-xs text-gray-400">I'm a stylist</p>
+              </div>
             </div>
 
             <p className="mt-3 text-[13px] font-medium text-[#7a7a7a]">Be among the first when we launch in your city.</p>

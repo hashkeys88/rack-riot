@@ -294,13 +294,7 @@ export default function Home() {
                 key={option.id}
                 className="group flex min-h-[330px] flex-col rounded-[28px] border border-[#1f1f1f]/10 bg-[#fffaf6] p-8 shadow-[0_16px_40px_rgba(44,24,16,0.08)] transition-all duration-200 hover:-translate-y-[4px] hover:border-[#ff4d4d]/25 hover:shadow-[0_24px_52px_rgba(44,24,16,0.12)]"
               >
-                <div className="flex items-start justify-between gap-3">
-                  {option.id !== '03' ? (
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#8c8c8c]">{option.id}</p>
-                  ) : <span />}
-                </div>
-
-                <h3 className="mt-5 text-[25px] font-semibold leading-tight text-[#181818]">{option.title}</h3>
+                <h3 className="text-[25px] font-semibold leading-tight text-[#181818]">{option.title}</h3>
                 <p className="mt-4 text-[15px] leading-relaxed text-[#5d5d5d]">{option.description}</p>
               </article>
             ))}

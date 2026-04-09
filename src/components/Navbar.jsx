@@ -10,6 +10,10 @@ const Navbar = () => {
   const role = profile?.role || null;
 
 
+  function handleLogoClick() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function handleOpenWaitlist(event) {
     event.preventDefault();
     if (location.pathname !== '/') {
@@ -23,7 +27,7 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-riotBorder bg-white shadow-[0_1px_0_#E8E8E8]">
       <nav className="mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="cursor-pointer font-logo text-[28px] font-normal tracking-[0.05em] text-riotAccent">
+        <Link to="/" onClick={handleLogoClick} className="cursor-pointer font-logo text-[28px] font-normal tracking-[0.05em] text-riotAccent">
           RACK RIOT
         </Link>
 

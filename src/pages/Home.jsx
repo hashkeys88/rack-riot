@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
 
 const ctaChips = ['Pay per session', 'Any store', 'Launching soon'];
 const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
@@ -264,12 +265,14 @@ export default function Home() {
 
           <div className="relative">
             <div className="absolute -inset-4 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(255,77,77,0.18),transparent_52%)] blur-2xl" />
-            <div className="relative overflow-hidden rounded-[28px] border border-[#1f1f1f]/10 bg-white p-3 shadow-[0_28px_80px_rgba(63,33,24,0.16)]">
-              <img
-                src="https://images.unsplash.com/photo-1753161026535-8a6804a14ad0?q=80&w=1600&auto=format&fit=crop"
-                alt="Stylish shopper carrying bags"
-                className="h-[360px] w-full rounded-[22px] object-cover object-center md:h-[500px]"
-              />
+            <div className="relative overflow-hidden rounded-[28px] shadow-[0_28px_80px_rgba(63,33,24,0.16)]">
+              <div className="h-[360px] md:h-[500px]">
+                <img
+                  src={heroShoppingImage}
+                  alt="Stylish shopper carrying bags"
+                  className="h-full w-full rounded-[28px] object-cover object-center"
+                />
+              </div>
             </div>
           </div>
         </div>

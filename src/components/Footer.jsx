@@ -17,14 +17,14 @@ export default function Footer() {
   }
 
   return (
-    <footer className="mt-20 border-t border-riotBorder bg-riotBgSecondary">
+    <footer className="mt-20 border-t border-[#2d2d2d] bg-[#111111]">
       <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 sm:grid-cols-2 md:px-12">
         <div>
-          <h3 className="font-logo text-[22px] text-riotAccent">Rack Riot</h3>
-          <p className="mt-2 max-w-sm text-[14px] text-riotTextSecondary">Skip the algorithm. Book a real stylist at any store, in person.</p>
+          <h3 className="font-logo text-[22px] text-[#FF4D4D]">Rack Riot</h3>
+          <p className="mt-2 max-w-sm text-[14px] text-[#aaaaaa]">Skip the algorithm. Book a real stylist at any store, in person.</p>
         </div>
-        <div className="grid grid-cols-2 gap-4 text-[14px] text-riotTextSecondary">
-          <button type="button" onClick={handleOpenWaitlist} className="text-left hover:text-riotText">Book a Stylist</button>
+        <div className="grid grid-cols-2 gap-4 text-[14px] text-[#aaaaaa]">
+          <button type="button" onClick={handleOpenWaitlist} className="text-left hover:text-white">Book a Stylist</button>
         </div>
       </div>
     </footer>

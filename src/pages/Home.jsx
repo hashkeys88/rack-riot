@@ -1,9 +1,81 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import isEmail from 'validator/lib/isEmail';
 import { supabase } from '../lib/supabase';
 import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
 
 const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
+const TRUSTED_EMAIL_DOMAINS = new Set([
+  'gmail.com',
+  'googlemail.com',
+  'icloud.com',
+  'me.com',
+  'mac.com',
+  'yahoo.com',
+  'outlook.com',
+  'hotmail.com',
+  'live.com',
+  'msn.com',
+  'aol.com',
+  'proton.me',
+  'protonmail.com',
+  'pm.me',
+  'fastmail.com'
+]);
+
+const BLOCKED_EMAIL_DOMAINS = new Set([
+  'gmal.com',
+  'gmial.com',
+  'gmail.comp',
+  'gmail.con',
+  'gmail.coom',
+  'gmail.cm',
+  'pm.com',
+  'hotnail.com',
+  'hotmai.com',
+  'hotmail.con',
+  'yaho.com',
+  'yahoo.con',
+  'outlok.com',
+  'outlook.con',
+  'pmail.com',
+  'test.com',
+  'mailinator.com',
+  'tempmail.com',
+  'guerrillamail.com',
+  '10minutemail.com',
+  'throwawaymail.com',
+  'yopmail.com'
+]);
+
+function validateWaitlistEmail(rawEmail) {
+  const normalizedEmail = rawEmail.trim().toLowerCase();
+  const [username = '', domain = ''] = normalizedEmail.split('@');
+  const domainParts = domain.split('.');
+  const tld = domainParts.at(-1) || '';
+  const hasValidUsername = username.length >= 1;
+  const hasDotInDomain = domain.includes('.');
+  const hasValidTld = /^[a-z]{2,}$/i.test(tld);
+  const hasValidShape = isEmail(normalizedEmail);
+
+  if (!normalizedEmail) {
+    return { valid: false, normalizedEmail, message: 'Please enter a valid email address' };
+  }
+
+  if (!hasValidUsername || !hasDotInDomain || !hasValidTld || !hasValidShape) {
+    return { valid: false, normalizedEmail, message: 'Please enter a valid email address' };
+  }
+
+  if (BLOCKED_EMAIL_DOMAINS.has(domain)) {
+    return { valid: false, normalizedEmail, message: 'Please enter a valid email address' };
+  }
+
+  if (!TRUSTED_EMAIL_DOMAINS.has(domain)) {
+    return { valid: false, normalizedEmail, message: 'Please use a well-known email provider' };
+  }
+
+  return { valid: true, normalizedEmail, message: '' };
+}
 
 const options = [
   {
@@ -32,6 +104,123 @@ const initialForm = {
   city: '',
   experience: ''
 };
+
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+
+function CityAutocompleteInput({ value, onChange }) {
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cacheRef = useRef(new Map());
+
+  useEffect(() => {
+    const query = value.trim();
+
+    if (!MAPBOX_ACCESS_TOKEN || query.length < 1) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
+
+    const cachedSuggestions = cacheRef.current.get(query.toLowerCase());
+    if (cachedSuggestions) {
+      setSuggestions(cachedSuggestions);
+      setLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setLoading(true);
+
+      try {
+        const params = new URLSearchParams({
+          access_token: MAPBOX_ACCESS_TOKEN,
+          autocomplete: 'true',
+          types: 'place',
+          limit: '5'
+        });
+
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params.toString()}`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch city suggestions');
+        }
+
+        const data = await response.json();
+        const nextSuggestions = (data.features || [])
+          .filter((feature) => Array.isArray(feature.place_type) && feature.place_type.includes('place'))
+          .map((feature) => feature.place_name)
+          .filter(Boolean);
+
+        cacheRef.current.set(query.toLowerCase(), nextSuggestions);
+        setSuggestions(nextSuggestions);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setSuggestions([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [value]);
+
+  function handleSelect(city) {
+    onChange(city);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  }
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => {
+          onChange(event.target.value);
+          setShowSuggestions(true);
+        }}
+        onFocus={() => setShowSuggestions(true)}
+        onBlur={() => {
+          window.setTimeout(() => setShowSuggestions(false), 120);
+        }}
+        placeholder="City"
+        autoComplete="off"
+        className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 pr-16 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+      />
+
+      {loading ? (
+        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#5d5d5d]">
+          Loading...
+        </span>
+      ) : null}
+
+      {showSuggestions && suggestions.length > 0 ? (
+        <div className="absolute z-10 mt-2 max-h-60 w-full overflow-hidden rounded-[24px] border border-[#1B2D42] bg-[#0D1B2A] shadow-[0_18px_40px_rgba(13,27,42,0.22)]">
+          {suggestions.map((city) => (
+            <button
+              key={city}
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => handleSelect(city)}
+              className="block w-full px-4 py-3 text-left text-[14px] font-medium text-white transition hover:bg-red-500"
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function WaitlistModal({
   modalType,
@@ -80,23 +269,17 @@ function WaitlistModal({
               value={formData.name}
               onChange={(event) => onChange('name', event.target.value)}
               placeholder="Your name"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
             />
             <input
               type="email"
               value={formData.email}
               onChange={(event) => onChange('email', event.target.value)}
               placeholder="Email"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
             />
             {emailError ? <p className="text-[13px] font-medium text-[#FF4D4D]">{emailError}</p> : null}
-            <input
-              type="text"
-              value={formData.city}
-              onChange={(event) => onChange('city', event.target.value)}
-              placeholder="City"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
-            />
+            <CityAutocompleteInput value={formData.city} onChange={(value) => onChange('city', value)} />
             {isStylist ? (
               <textarea
                 value={formData.experience}
@@ -166,15 +349,14 @@ export default function Home() {
   async function handleWaitlistSubmit(event) {
     event.preventDefault();
 
-    const normalizedEmail = formData.email.toLowerCase().trim();
+    const { valid: emailValid, normalizedEmail, message: emailValidationMessage } = validateWaitlistEmail(formData.email);
     const normalizedName = formData.name.trim();
     const normalizedCity = formData.city.trim();
     const normalizedExperience = formData.experience.trim();
     const isStylist = modalType === 'stylist';
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail);
 
-    if (!normalizedEmail || !emailValid) {
-      setEmailError('Please enter a valid email address');
+    if (!emailValid) {
+      setEmailError(emailValidationMessage);
       return;
     }
 
@@ -265,13 +447,22 @@ export default function Home() {
 
           <div className="relative">
             <div className="absolute -inset-4 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(255,77,77,0.2),transparent_52%)] blur-2xl" />
-            <div className="relative overflow-hidden rounded-[28px] border-[0.5px] border-[#3D5A7A] shadow-[0_28px_80px_rgba(63,33,24,0.16)]">
-              <div className="h-[360px] md:h-[500px]">
+            <div
+              className="relative overflow-hidden rounded-[12px]"
+              style={{
+                maskImage:
+                  'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 82%, transparent 100%)',
+                WebkitMaskImage:
+                  'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 82%, transparent 100%)'
+              }}
+            >
+              <div className="relative h-[360px] md:h-[500px]">
                 <img
                   src={heroShoppingImage}
                   alt="Stylish shopper carrying bags"
-                  className="h-full w-full rounded-[28px] object-cover object-center"
+                  className="h-full w-full rounded-[12px] object-cover object-center"
                 />
+                <div className="pointer-events-none absolute inset-0 rounded-[12px] bg-[rgba(13,27,42,0.25)] mix-blend-multiply" />
               </div>
             </div>
           </div>

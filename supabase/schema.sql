@@ -71,7 +71,7 @@ create table if not exists stylist_applications (
 
 create table if not exists waitlist (
   id uuid default gen_random_uuid() primary key,
-  email text unique not null,
+  email text not null,
   name text,
   city text,
   experience text,
@@ -88,6 +88,9 @@ alter table waitlist alter column created_at type timestamptz using created_at a
 alter table waitlist alter column created_at set default now();
 update waitlist set type = 'client' where type is null;
 alter table waitlist alter column type set not null;
+alter table waitlist drop constraint if exists waitlist_email_key;
+alter table waitlist drop constraint if exists waitlist_email_type_key;
+alter table waitlist add constraint waitlist_email_type_key unique (email, type);
 alter table waitlist drop constraint if exists waitlist_type_check;
 alter table waitlist add constraint waitlist_type_check check (type in ('client', 'stylist'));
 

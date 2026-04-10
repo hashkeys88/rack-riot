@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
@@ -33,6 +33,123 @@ const initialForm = {
   city: '',
   experience: ''
 };
+
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+
+function CityAutocompleteInput({ value, onChange }) {
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const cacheRef = useRef(new Map());
+
+  useEffect(() => {
+    const query = value.trim();
+
+    if (!MAPBOX_ACCESS_TOKEN || query.length < 1) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
+
+    const cachedSuggestions = cacheRef.current.get(query.toLowerCase());
+    if (cachedSuggestions) {
+      setSuggestions(cachedSuggestions);
+      setLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setLoading(true);
+
+      try {
+        const params = new URLSearchParams({
+          access_token: MAPBOX_ACCESS_TOKEN,
+          autocomplete: 'true',
+          types: 'place',
+          limit: '5'
+        });
+
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params.toString()}`,
+          { signal: controller.signal }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch city suggestions');
+        }
+
+        const data = await response.json();
+        const nextSuggestions = (data.features || [])
+          .filter((feature) => Array.isArray(feature.place_type) && feature.place_type.includes('place'))
+          .map((feature) => feature.place_name)
+          .filter(Boolean);
+
+        cacheRef.current.set(query.toLowerCase(), nextSuggestions);
+        setSuggestions(nextSuggestions);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setSuggestions([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }, 100);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [value]);
+
+  function handleSelect(city) {
+    onChange(city);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  }
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onChange={(event) => {
+          onChange(event.target.value);
+          setShowSuggestions(true);
+        }}
+        onFocus={() => setShowSuggestions(true)}
+        onBlur={() => {
+          window.setTimeout(() => setShowSuggestions(false), 120);
+        }}
+        placeholder="City"
+        autoComplete="off"
+        className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 pr-16 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+      />
+
+      {loading ? (
+        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[12px] font-medium text-[#5d5d5d]">
+          Loading...
+        </span>
+      ) : null}
+
+      {showSuggestions && suggestions.length > 0 ? (
+        <div className="absolute z-10 mt-2 max-h-60 w-full overflow-hidden rounded-[24px] border border-[#1B2D42] bg-[#0D1B2A] shadow-[0_18px_40px_rgba(13,27,42,0.22)]">
+          {suggestions.map((city) => (
+            <button
+              key={city}
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => handleSelect(city)}
+              className="block w-full px-4 py-3 text-left text-[14px] font-medium text-white transition hover:bg-red-500"
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 function WaitlistModal({
   modalType,
@@ -89,13 +206,7 @@ function WaitlistModal({
               placeholder="Email"
               className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
             />
-            <input
-              type="text"
-              value={formData.city}
-              onChange={(event) => onChange('city', event.target.value)}
-              placeholder="City"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
-            />
+            <CityAutocompleteInput value={formData.city} onChange={(value) => onChange('city', value)} />
             {isStylist ? (
               <textarea
                 value={formData.experience}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
-import isEmail from 'validator/lib/isEmail';
+import { LockKeyhole, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
 
@@ -48,21 +47,23 @@ const BLOCKED_EMAIL_DOMAINS = new Set([
   'yopmail.com'
 ]);
 
+function isValidEmail(email) {
+  if (!email || email.trim() === '') return false;
+  if (email.startsWith('.') || email.startsWith('@')) return false;
+  if (email.includes('..')) return false;
+  if (email.indexOf('@') !== email.lastIndexOf('@')) return false;
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return false;
+  if (domain.startsWith('.')) return false;
+  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+}
+
 function validateWaitlistEmail(rawEmail) {
   const normalizedEmail = rawEmail.trim().toLowerCase();
-  const [username = '', domain = ''] = normalizedEmail.split('@');
-  const domainParts = domain.split('.');
-  const tld = domainParts.at(-1) || '';
-  const hasValidUsername = username.length >= 1;
-  const hasDotInDomain = domain.includes('.');
-  const hasValidTld = /^[a-z]{2,}$/i.test(tld);
-  const hasValidShape = isEmail(normalizedEmail);
+  const [, domain = ''] = normalizedEmail.split('@');
 
-  if (!normalizedEmail) {
-    return { valid: false, normalizedEmail, message: 'Please enter a valid email address' };
-  }
-
-  if (!hasValidUsername || !hasDotInDomain || !hasValidTld || !hasValidShape) {
+  if (!isValidEmail(normalizedEmail)) {
     return { valid: false, normalizedEmail, message: 'Please enter a valid email address' };
   }
 
@@ -98,16 +99,20 @@ const options = [
   }
 ];
 
+const yearsExperienceOptions = ['Less than 1 year', '1–3 years', '3–5 years', '5+ years'];
+
 const initialForm = {
   name: '',
   email: '',
   city: '',
-  experience: ''
+  experience: '',
+  portfolio: '',
+  yearsExperience: ''
 };
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-function CityAutocompleteInput({ value, onChange }) {
+function CityAutocompleteInput({ value, onChange, inputId, placeholder = 'City' }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -182,6 +187,7 @@ function CityAutocompleteInput({ value, onChange }) {
   return (
     <div className="relative">
       <input
+        id={inputId}
         type="text"
         value={value}
         onChange={(event) => {
@@ -192,7 +198,7 @@ function CityAutocompleteInput({ value, onChange }) {
         onBlur={() => {
           window.setTimeout(() => setShowSuggestions(false), 120);
         }}
-        placeholder="City"
+        placeholder={placeholder}
         autoComplete="off"
         className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 pr-16 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
       />
@@ -222,31 +228,57 @@ function CityAutocompleteInput({ value, onChange }) {
   );
 }
 
+function FieldLabel({ htmlFor, label, required = false }) {
+  return (
+    <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] font-semibold text-[#161616]">
+      {label}
+      {required ? <span className="ml-1 text-[#ff4d4d]">*</span> : null}
+    </label>
+  );
+}
+
 function WaitlistModal({
   modalType,
+  modalStep,
   formData,
-  emailError,
+  fieldErrors,
   submitting,
   waitlistError,
   successMessage,
   onClose,
   onChange,
+  onNextStep,
+  onPreviousStep,
   onSubmit
 }) {
   const isStylist = modalType === 'stylist';
+  const titleId = isStylist ? 'stylist-modal-title' : 'client-modal-title';
+  const descriptionId = isStylist ? 'stylist-modal-description' : 'client-modal-description';
+  const submitTrustCopy = isStylist
+    ? 'Your application stays private and is only used to review fit and contact you.'
+    : 'We’ll only use your info for launch updates. No spam.';
+  const isStylistIntroStep = isStylist && modalStep === 1;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/35 px-4">
-      <div className="w-full max-w-md rounded-[28px] border border-[#1f1f1f]/10 bg-white p-6 shadow-[0_28px_80px_rgba(63,33,24,0.16)]">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-[rgba(6,14,22,0.56)] backdrop-blur-[7px] transition-opacity duration-300" />
+      <div
+        className={`relative w-full rounded-[28px] border border-[#1f1f1f]/10 bg-white shadow-[0_38px_120px_rgba(12,22,34,0.32)] transition-all duration-300 ease-out animate-[modal-enter_220ms_ease-out] ${isStylist ? 'max-w-2xl' : 'max-w-xl'} ${isStylist ? 'max-h-[85vh] overflow-y-auto' : ''} p-6 md:p-7`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">Founding members</p>
-            <h2 className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#161616]">
+            <h2 id={titleId} className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#161616]">
               {isStylist ? 'Apply as a stylist' : 'Get early access'}
             </h2>
-            <p className="mt-2 text-[15px] leading-relaxed text-[#5d5d5d]">
+            <p id={descriptionId} className="mt-3 text-[15px] leading-relaxed text-[#5d5d5d]">
               {isStylist ? 'Tell us about your styling background and where you want to launch.' : 'Be first to hear when Rack Riot opens in your city.'}
             </p>
+            {isStylist ? <p className="mt-2 text-[13px] font-medium text-[#7a7a7a]">Step {modalStep} of 2</p> : null}
           </div>
           <button
             type="button"
@@ -259,44 +291,141 @@ function WaitlistModal({
         </div>
 
         {successMessage ? (
-          <div className="mt-6 rounded-[20px] border border-[#1f1f1f]/8 bg-[#fffaf6] px-5 py-4">
+          <div className="mt-6 rounded-[20px] border border-[#1f1f1f]/8 bg-[#fffaf6] px-5 py-5 text-center">
             <p className="text-[15px] font-medium text-[#161616]">{successMessage}</p>
           </div>
         ) : (
-          <form onSubmit={onSubmit} className="mt-6 space-y-3">
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(event) => onChange('name', event.target.value)}
-              placeholder="Your name"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
-            />
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(event) => onChange('email', event.target.value)}
-              placeholder="Email"
-              className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
-            />
-            {emailError ? <p className="text-[13px] font-medium text-[#FF4D4D]">{emailError}</p> : null}
-            <CityAutocompleteInput value={formData.city} onChange={(value) => onChange('city', value)} />
-            {isStylist ? (
-              <textarea
-                value={formData.experience}
-                onChange={(event) => onChange('experience', event.target.value)}
-                placeholder="Tell us about your styling background"
-                rows={4}
-                className="w-full rounded-[24px] border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
-              />
+          <form onSubmit={onSubmit} className="mt-7 space-y-4">
+            {!isStylist || isStylistIntroStep ? (
+              <>
+                <div>
+                  <FieldLabel htmlFor={`${modalType}-name`} label="Full name" required />
+                  <input
+                    id={`${modalType}-name`}
+                    type="text"
+                    value={formData.name}
+                    onChange={(event) => onChange('name', event.target.value)}
+                    placeholder="Your full name"
+                    className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+                  />
+                  {fieldErrors.name ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.name}</p> : null}
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor={`${modalType}-email`} label="Email address" required />
+                  <input
+                    id={`${modalType}-email`}
+                    type="email"
+                    value={formData.email}
+                    onChange={(event) => onChange('email', event.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+                  />
+                  {fieldErrors.email ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.email}</p> : null}
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor={`${modalType}-city`} label={isStylist ? 'City / service area' : 'City'} required />
+                  <CityAutocompleteInput value={formData.city} onChange={(value) => onChange('city', value)} inputId={`${modalType}-city`} placeholder={isStylist ? 'Where do you style clients?' : 'Where should we keep you posted?'} />
+                  {fieldErrors.city ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.city}</p> : null}
+                </div>
+              </>
             ) : null}
+
+            {isStylist && modalStep === 2 ? (
+              <>
+                <div>
+                  <FieldLabel htmlFor="stylist-portfolio" label="Instagram / portfolio" required />
+                  <input
+                    id="stylist-portfolio"
+                    type="url"
+                    value={formData.portfolio}
+                    onChange={(event) => onChange('portfolio', event.target.value)}
+                    placeholder="Instagram profile, website, or portfolio link"
+                    className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 placeholder:text-gray-500 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+                  />
+                  {fieldErrors.portfolio ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.portfolio}</p> : null}
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor="stylist-years" label="Years of styling experience" required />
+                  <select
+                    id="stylist-years"
+                    value={formData.yearsExperience}
+                    onChange={(event) => onChange('yearsExperience', event.target.value)}
+                    className="w-full rounded-full border border-[#1f1f1f]/12 bg-[#fffaf6] px-4 py-3 text-[16px] font-medium text-gray-900 focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+                  >
+                    <option value="">Select experience level</option>
+                    {yearsExperienceOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.yearsExperience ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.yearsExperience}</p> : null}
+                </div>
+
+                <div>
+                  <FieldLabel htmlFor="stylist-experience" label="Styling experience" required />
+                  <textarea
+                    id="stylist-experience"
+                    value={formData.experience}
+                    onChange={(event) => onChange('experience', event.target.value)}
+                    placeholder="Tell us about your styling experience, the types of clients you’ve worked with, your style strengths, and what kinds of looks you love creating."
+                    rows={4}
+                    className="w-full rounded-[24px] border border-[#1f1f1f]/12 bg-[#fffaf6] px-5 py-3 text-[14px] font-medium text-[#161616] placeholder:text-[#9c9c9c] focus:border-[#ff4d4d] focus:outline-none focus:ring-2 focus:ring-[#ff4d4d]/15"
+                  />
+                  {fieldErrors.experience ? <p className="mt-1 text-[13px] font-medium text-[#FF4D4D]">{fieldErrors.experience}</p> : null}
+                </div>
+              </>
+            ) : null}
+
             {waitlistError ? <p className="text-[13px] font-medium text-[#d24747]">{waitlistError}</p> : null}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex w-full items-center justify-center rounded-full bg-[#ff4d4d] px-5 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {submitting ? 'Saving...' : isStylist ? 'Apply to Join' : 'Count me in'}
-            </button>
+            <div className="pt-2">
+              {isStylist ? (
+                <div className="sticky bottom-0 space-y-3 bg-white pt-1">
+                  <div className="flex gap-3">
+                    {modalStep === 2 ? (
+                      <button
+                        type="button"
+                        onClick={onPreviousStep}
+                        className="inline-flex items-center justify-center rounded-full border border-[#1f1f1f]/12 px-5 py-3 text-[14px] font-semibold text-[#161616] transition hover:bg-[#fff4f1]"
+                      >
+                        Back
+                      </button>
+                    ) : null}
+                    <button
+                      type={modalStep === 1 ? 'button' : 'submit'}
+                      onClick={modalStep === 1 ? onNextStep : undefined}
+                      disabled={submitting}
+                      className="inline-flex w-full items-center justify-center rounded-full bg-[#ff4d4d] px-5 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {submitting ? 'Saving...' : modalStep === 1 ? 'Continue' : 'Apply to Join'}
+                    </button>
+                  </div>
+                  <p className="text-center text-[14px] leading-relaxed text-[#6f6f6f]">{submitTrustCopy}</p>
+                  <div className="flex items-center justify-center gap-2 text-[14px] text-[#7a7a7a]">
+                    <LockKeyhole size={14} />
+                    <span>Your info is handled securely</span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="inline-flex w-full items-center justify-center rounded-full bg-[#ff4d4d] px-5 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {submitting ? 'Saving...' : 'Count me in'}
+                  </button>
+                  <p className="mt-3 text-center text-[12px] leading-relaxed text-[#7a7a7a]">{submitTrustCopy}</p>
+                  <div className="mt-2 flex items-center justify-center gap-2 text-[14px] text-[#7a7a7a]">
+                    <LockKeyhole size={14} />
+                    <span>Your info is handled securely</span>
+                  </div>
+                </>
+              )}
+            </div>
           </form>
         )}
       </div>
@@ -306,19 +435,33 @@ function WaitlistModal({
 
 export default function Home() {
   const [modalType, setModalType] = useState(null);
+  const [modalStep, setModalStep] = useState(1);
   const [formData, setFormData] = useState(initialForm);
-  const [emailError, setEmailError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [waitlistError, setWaitlistError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
+    if (!modalType) return undefined;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [modalType]);
+
+  useEffect(() => {
     function handleOpenWaitlist(event) {
       const nextType = event?.detail?.type === 'stylist' ? 'stylist' : 'client';
       setFormData(initialForm);
-      setEmailError('');
+      setFieldErrors({});
       setWaitlistError('');
       setSuccessMessage('');
+      setModalStep(1);
       setModalType(nextType);
     }
 
@@ -328,9 +471,10 @@ export default function Home() {
 
   function openWaitlistModal(type) {
     setFormData(initialForm);
-    setEmailError('');
+    setFieldErrors({});
     setWaitlistError('');
     setSuccessMessage('');
+    setModalStep(1);
     setModalType(type);
   }
 
@@ -340,10 +484,32 @@ export default function Home() {
   }
 
   function updateField(field, value) {
-    if (field === 'email') {
-      setEmailError('');
-    }
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
     setFormData((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleStylistStepAdvance() {
+    const nextFieldErrors = {};
+    const normalizedName = formData.name.trim();
+    const { valid: emailValid, message: emailValidationMessage } = validateWaitlistEmail(formData.email);
+    const normalizedCity = formData.city.trim();
+
+    if (!normalizedName) nextFieldErrors.name = 'Please enter your full name.';
+    if (!emailValid) nextFieldErrors.email = emailValidationMessage;
+    if (!normalizedCity) nextFieldErrors.city = 'Please enter your city.';
+
+    if (Object.keys(nextFieldErrors).length) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
+
+    setFieldErrors({});
+    setModalStep(2);
   }
 
   async function handleWaitlistSubmit(event) {
@@ -353,49 +519,100 @@ export default function Home() {
     const normalizedName = formData.name.trim();
     const normalizedCity = formData.city.trim();
     const normalizedExperience = formData.experience.trim();
+    const normalizedPortfolio = formData.portfolio.trim();
+    const normalizedYearsExperience = formData.yearsExperience.trim();
     const isStylist = modalType === 'stylist';
+    const nextFieldErrors = {};
+
+    if (isStylist && modalStep === 1) {
+      handleStylistStepAdvance();
+      return;
+    }
 
     if (!emailValid) {
-      setEmailError(emailValidationMessage);
-      return;
+      nextFieldErrors.email = emailValidationMessage;
     }
 
-    setEmailError('');
+    if (!normalizedName) {
+      nextFieldErrors.name = 'Please enter your full name.';
+    }
+
+    if (!normalizedCity) {
+      nextFieldErrors.city = 'Please enter your city.';
+    }
+
+    if (isStylist && !normalizedPortfolio) {
+      nextFieldErrors.portfolio = 'Please share your portfolio or Instagram link.';
+    }
+
+    if (isStylist && !normalizedYearsExperience) {
+      nextFieldErrors.yearsExperience = 'Please select your experience level.';
+    }
 
     if (isStylist && !normalizedExperience) {
-      setWaitlistError('Please tell us about your styling background.');
+      nextFieldErrors.experience = 'Please tell us about your styling background.';
+    }
+
+    if (Object.keys(nextFieldErrors).length) {
+      setFieldErrors(nextFieldErrors);
       return;
     }
 
+    setFieldErrors({});
     setSubmitting(true);
     setWaitlistError('');
 
     try {
-      const payload = {
-        email: normalizedEmail,
-        name: normalizedName || null,
-        city: normalizedCity || null,
-        experience: isStylist ? normalizedExperience : null,
-        type: isStylist ? 'stylist' : 'client'
-      };
+      if (isStylist) {
+        const { data: existingApplication, error: lookupError } = await supabase
+          .from('stylist_applications')
+          .select('id')
+          .eq('email', normalizedEmail)
+          .maybeSingle();
 
-      const { error } = await supabase.from('waitlist').insert(payload);
+        if (lookupError) throw lookupError;
 
-      if (error) {
-        const message = String(error.message || '').toLowerCase();
-        if (error.code === '23505' || message.includes('duplicate') || message.includes('unique')) {
-          setWaitlistError(
-            isStylist ? "You've already applied as a stylist!" : "You're already on the client waitlist!"
-          );
+        if (existingApplication) {
+          setWaitlistError("You've already applied as a stylist!");
           return;
         }
-        throw error;
+
+        const { error } = await supabase.from('stylist_applications').insert({
+          full_name: normalizedName,
+          email: normalizedEmail,
+          city: normalizedCity,
+          instagram_handle: normalizedPortfolio,
+          years_experience: normalizedYearsExperience,
+          bio: normalizedExperience,
+          status: 'pending'
+        });
+
+        if (error) throw error;
+      } else {
+        const payload = {
+          email: normalizedEmail,
+          name: normalizedName || null,
+          city: normalizedCity || null,
+          experience: null,
+          type: 'client'
+        };
+
+        const { error } = await supabase.from('waitlist').insert(payload);
+
+        if (error) {
+          const message = String(error.message || '').toLowerCase();
+          if (error.code === '23505' || message.includes('duplicate') || message.includes('unique')) {
+            setWaitlistError("You're already on the client waitlist!");
+            return;
+          }
+          throw error;
+        }
       }
 
       setSuccessMessage(
         isStylist
-          ? "Thanks! We'll be in touch when we launch in your city."
-          : "You're in 🎉 We'll reach out when we launch in your city."
+          ? 'Application received — we’ll review and follow up soon.'
+          : 'You’re in — we’ll reach out when Rack Riot launches near you.'
       );
       setFormData(initialForm);
     } catch {
@@ -407,71 +624,57 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#0D1B2A_0%,#1B2D42_60%,#0D1B2A_100%)] pb-14 pt-4 text-white md:pb-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(255,77,77,0.18),transparent_34%),radial-gradient(circle_at_86%_10%,rgba(255,255,255,0.04),transparent_26%)]" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,rgba(13,27,42,0),rgba(13,27,42,0.9))]" />
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#0D1B2A_0%,#1B2D42_60%,#0D1B2A_100%)] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(255,77,77,0.12),transparent_32%),radial-gradient(circle_at_84%_12%,rgba(255,255,255,0.03),transparent_24%)]" />
+        <div className="relative mx-auto grid min-h-[90vh] w-full max-w-7xl items-stretch md:grid-cols-[0.4fr_0.6fr]">
+          <div className="relative z-10 flex items-center px-6 py-14 md:px-8 md:py-16 lg:px-12">
+            <div className="w-full max-w-[520px]">
+              <h1 className="max-w-[620px] text-[38px] font-extrabold leading-[1] tracking-[-0.03em] text-white md:text-[52px]">
+                Any Store. A Personal Stylist. Your Best Look.
+              </h1>
 
-        <div className="relative mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.05fr_0.95fr] md:items-center md:gap-14 md:px-12 md:py-20">
-          <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">In-person styling for real life</p>
-            <h1 className="mt-4 max-w-[620px] text-[42px] font-extrabold leading-[0.98] tracking-[-0.03em] text-white md:text-[64px]">
-              Personal styling meets real-world shopping
-            </h1>
+              <p className="mt-5 max-w-[520px] text-[18px] leading-relaxed text-[#7B9BB5]">
+                Skip the algorithm. Book real styling, in person.
+              </p>
 
-            <p className="mt-6 max-w-[560px] text-[18px] leading-relaxed text-[#7B9BB5]">
-              Skip the algorithm. Book a real stylist, at any store, in person.
-            </p>
+              <div className="mt-8 flex flex-wrap items-start gap-3">
+                <div className="flex flex-col items-center">
+                  <button
+                    type="button"
+                    onClick={() => openWaitlistModal('client')}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#FF4D4D] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
+                  >
+                    Book a Stylist
+                  </button>
+                </div>
 
-            <div className="mt-9 flex flex-wrap items-start gap-3">
-              <div className="flex flex-col items-center">
-                <button
-                  type="button"
-                  onClick={() => openWaitlistModal('client')}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#FF4D4D] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
-                >
-                  Book a Stylist
-                </button>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <button
-                  type="button"
-                  onClick={() => openWaitlistModal('stylist')}
-                  className="inline-flex items-center justify-center rounded-full border-[1.5px] border-white bg-transparent px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
-                >
-                  Apply as a Stylist
-                </button>
+                <div className="flex flex-col items-center">
+                  <button
+                    type="button"
+                    onClick={() => openWaitlistModal('stylist')}
+                    className="inline-flex items-center justify-center rounded-full border-[1.5px] border-white bg-transparent px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
+                  >
+                    Apply as a Stylist
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(255,77,77,0.2),transparent_52%)] blur-2xl" />
-            <div
-              className="relative overflow-hidden rounded-[12px]"
-              style={{
-                maskImage:
-                  'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 82%, transparent 100%)',
-                WebkitMaskImage:
-                  'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%), linear-gradient(to bottom, black 0%, black 82%, transparent 100%)'
-              }}
-            >
-              <div className="relative h-[360px] md:h-[500px]">
-                <img
-                  src={heroShoppingImage}
-                  alt="Stylish shopper carrying bags"
-                  className="h-full w-full rounded-[12px] object-cover object-center"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-[12px] bg-[rgba(13,27,42,0.25)] mix-blend-multiply" />
-              </div>
-            </div>
+          <div className="relative min-h-[420px] md:-ml-4 md:min-h-[90vh] md:self-stretch md:overflow-hidden">
+            <img
+              src={heroShoppingImage}
+              alt="Stylist and client shopping together in a clothing store"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-[linear-gradient(90deg,#0D1B2A_0%,rgba(13,27,42,0.12)_36%,rgba(13,27,42,0)_100%)] md:w-16 lg:w-20" />
           </div>
         </div>
       </section>
 
-      <section className="bg-[#0D1B2A] px-6 pb-20 pt-12 text-white md:px-12 md:pb-24 md:pt-14">
-        <div id="how-it-works" className="mx-auto max-w-[1180px]">
-          <div className="mb-10 max-w-[760px]">
+      <section className="bg-[#0D1B2A] px-6 pb-14 pt-10 text-white md:px-8 md:pb-16 md:pt-12 lg:px-12">
+        <div id="how-it-works" className="mx-auto w-full max-w-7xl">
+          <div className="mb-8 max-w-[720px]">
             <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">How it works</p>
             <h2 className="mt-3 text-[34px] font-bold tracking-[-0.02em] text-white md:text-[44px]">Choose the shopping plan that fits your energy</h2>
             <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed text-[#7B9BB5]">
@@ -479,11 +682,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3 lg:gap-5">
             {options.map((option) => (
               <article
                 key={option.id}
-                className="group flex min-h-[330px] flex-col rounded-[28px] border-[0.5px] border-[#3D5A7A] bg-[#1B2D42] p-8 shadow-[0_16px_40px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-[4px] hover:border-[#3D5A7A] hover:shadow-[0_24px_52px_rgba(0,0,0,0.28)]"
+                className="group flex min-h-[260px] flex-col justify-between rounded-[28px] border-[0.5px] border-[#3D5A7A] bg-[#1B2D42] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-[4px] hover:border-[#3D5A7A] hover:shadow-[0_24px_52px_rgba(0,0,0,0.28)] lg:p-7"
               >
                 <h3 className="text-[25px] font-semibold leading-tight text-white">{option.title}</h3>
                 <p className="mt-4 text-[15px] leading-relaxed text-[#7B9BB5]">{option.description}</p>
@@ -496,13 +699,16 @@ export default function Home() {
       {modalType ? (
         <WaitlistModal
           modalType={modalType}
+          modalStep={modalStep}
           formData={formData}
-          emailError={emailError}
+          fieldErrors={fieldErrors}
           submitting={submitting}
           waitlistError={waitlistError}
           successMessage={successMessage}
           onClose={closeWaitlistModal}
           onChange={updateField}
+          onNextStep={handleStylistStepAdvance}
+          onPreviousStep={() => setModalStep(1)}
           onSubmit={handleWaitlistSubmit}
         />
       ) : null}

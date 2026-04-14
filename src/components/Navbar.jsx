@@ -25,14 +25,13 @@ const Navbar = () => {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#1B2D42] bg-[#0D1B2A] shadow-[0_1px_0_#1B2D42]">
-      <nav className="mx-auto flex h-[60px] max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" onClick={handleLogoClick} className="cursor-pointer font-logo text-[28px] font-normal tracking-[0.05em]">
-          <span className="text-white">RACK </span>
-          <span className="text-[#FF4D4D]">RIOT</span>
+    <header className="sticky top-0 z-50 border-b border-[#1B2D42] bg-[#0D1B2A]">
+      <nav className="mx-auto flex h-[68px] w-full max-w-7xl items-center justify-between px-6 md:px-8 lg:px-12">
+        <Link to="/" onClick={handleLogoClick} className="cursor-pointer font-logo text-[28px] font-normal tracking-[0.05em] text-[#FF4D4D]">
+          RACK RIOT
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-3">
           {user && role && !loading ? (
             <>
               {role === 'stylist' ? (
@@ -60,7 +59,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleOpenWaitlist}
-                className="rounded-md bg-[#FF4D4D] px-3 py-1.5 text-[14px] font-semibold text-white transition hover:bg-[#e03e3e]"
+                className="rounded-full bg-[#FF4D4D] px-6 py-3 text-[14px] font-semibold text-white transition hover:bg-[#e03e3e]"
               >
                 Book a Stylist
               </button>

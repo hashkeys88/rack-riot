@@ -81,21 +81,36 @@ function validateWaitlistEmail(rawEmail) {
 const options = [
   {
     id: '01',
-    title: 'Option 1: Solo Session',
+    title: 'Solo Session',
     description:
-      'Book a stylist for one-on-one support and walk out with looks that fit your budget, body, and everyday life.'
+      'One-on-one support tailored to your style and budget.'
   },
   {
     id: '02',
-    title: 'Option 2: Group Session',
+    title: 'Group Session',
     description:
-      'Bring your crew, split the cost, and turn shopping into a social experience with expert guidance in real stores.'
+      'Shop with friends for a fun, guided in-store experience.'
   },
   {
     id: '03',
-    title: 'Option 3: Find a Shopping Buddy',
+    title: 'Find a Shopping Buddy',
     description:
-      'Tell us your city and style, then get matched with people nearby to plan your next haul together.'
+      'Tell us your goals and we’ll match you with the right stylist.'
+  }
+];
+
+const processSteps = [
+  {
+    title: 'Choose your session'
+  },
+  {
+    title: 'Share style + budget'
+  },
+  {
+    title: 'Quick virtual intro'
+  },
+  {
+    title: 'Meet in store + leave with better looks'
   }
 ];
 
@@ -512,6 +527,12 @@ export default function Home() {
     setModalStep(2);
   }
 
+  function scrollToHowItWorks() {
+    const target = document.getElementById('how-it-works');
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   async function handleWaitlistSubmit(event) {
     event.preventDefault();
 
@@ -634,7 +655,7 @@ export default function Home() {
               </h1>
 
               <p className="mt-5 max-w-[520px] text-[18px] leading-relaxed text-[#7B9BB5]">
-                Skip the algorithm. Book real styling, in person.
+                Skip the algorithm. Book real styling help at any store, in person.
               </p>
 
               <div className="mt-8 flex flex-wrap items-start gap-3">
@@ -658,6 +679,18 @@ export default function Home() {
                   </button>
                 </div>
               </div>
+
+              <p className="mt-4 text-[13px] font-medium text-[#91a9bf]">
+                Founding members get early access in launch cities.
+              </p>
+
+              <button
+                type="button"
+                onClick={scrollToHowItWorks}
+                className="mt-4 inline-flex items-center text-[14px] font-medium text-[#d7e2ec] transition hover:text-white"
+              >
+                See how it works ↓
+              </button>
             </div>
           </div>
 
@@ -672,26 +705,46 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-[#0D1B2A] px-6 pb-14 pt-10 text-white md:px-8 md:pb-16 md:pt-12 lg:px-12">
-        <div id="how-it-works" className="mx-auto w-full max-w-7xl">
-          <div className="mb-8 max-w-[720px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">How it works</p>
-            <h2 className="mt-3 text-[34px] font-bold tracking-[-0.02em] text-white md:text-[44px]">Choose the shopping plan that fits your energy</h2>
-            <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed text-[#7B9BB5]">
-              Start solo, book with friends, or join the buddy flow. Rack Riot keeps the experience human, flexible, and built around real stores.
+      <section className="bg-[#0D1B2A] px-6 pb-12 pt-10 text-white md:px-8 md:pb-14 md:pt-12 lg:px-12">
+        <div id="how-it-works" className="mx-auto w-full max-w-[1100px]">
+          <div className="mb-8 max-w-[660px]">
+            <h2 className="text-[32px] font-bold tracking-[-0.02em] text-white md:text-[42px]">
+              Simple, human styling — built around your schedule.
+            </h2>
+            <p className="mt-4 max-w-[600px] text-[16px] leading-7 text-[#7B9BB5]">
+              Choose the format that fits your day, then we’ll guide you from first intro to the final fitting room decision.
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3 lg:gap-5">
+          <div className="grid gap-3 md:grid-cols-3 md:gap-3.5 lg:gap-4">
             {options.map((option) => (
               <article
                 key={option.id}
-                className="group flex min-h-[260px] flex-col justify-between rounded-[28px] border-[0.5px] border-[#3D5A7A] bg-[#1B2D42] p-6 shadow-[0_16px_40px_rgba(0,0,0,0.2)] transition-all duration-200 hover:-translate-y-[4px] hover:border-[#3D5A7A] hover:shadow-[0_24px_52px_rgba(0,0,0,0.28)] lg:p-7"
+                className="group flex min-h-[136px] flex-col rounded-[24px] border border-[#3D5A7A]/55 bg-[linear-gradient(180deg,rgba(27,45,66,0.94)_0%,rgba(24,39,57,0.92)_100%)] p-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] transition-all duration-200 hover:-translate-y-[2px] hover:border-[#4c6b8c]/70 hover:shadow-[0_18px_36px_rgba(0,0,0,0.22)] lg:p-5"
               >
-                <h3 className="text-[25px] font-semibold leading-tight text-white">{option.title}</h3>
-                <p className="mt-4 text-[15px] leading-relaxed text-[#7B9BB5]">{option.description}</p>
+                <h3 className="text-[20px] font-semibold leading-tight text-white">{option.title}</h3>
+                <p className="mt-2.5 max-w-[30ch] text-[14px] leading-6 text-[#8ca8c3]">{option.description}</p>
               </article>
             ))}
+          </div>
+
+          <div className="mt-7 rounded-[24px] border border-[#314a64]/45 bg-[linear-gradient(180deg,rgba(18,34,51,0.78)_0%,rgba(14,28,42,0.72)_100%)] px-4 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] md:px-5 lg:px-6">
+            <div className="grid gap-2.5 md:grid-cols-4 md:gap-0">
+              {processSteps.map((step, index) => (
+                <div
+                  key={step.title}
+                  className="flex items-center gap-3 rounded-[18px] px-3 py-2.5 md:min-h-[72px] md:rounded-none md:px-4 md:py-3"
+                >
+                  <span className="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border border-[#3D5A7A]/60 bg-[#13273a]/55 text-[11px] font-semibold text-[#b2c4d5]">
+                    {index + 1}
+                  </span>
+                  <p className="text-[14px] font-medium leading-5 text-[#d9e5ef]">{step.title}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-center text-[14px] leading-6 text-[#7B9BB5]">
+              Founding members get early access in launch cities.
+            </p>
           </div>
         </div>
       </section>

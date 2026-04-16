@@ -89,28 +89,32 @@ const options = [
     id: '02',
     title: 'Group Session',
     description:
-      'Shop with friends for a fun, guided in-store experience.'
+      'Bring friends and shop together with expert styling support built into the experience.'
   },
   {
     id: '03',
     title: 'Find a Shopping Buddy',
     description:
-      'Tell us your goals and we’ll match you with the right stylist.'
+      'Get matched with shoppers in your city who share your style, goals, or vibe.'
   }
 ];
 
 const processSteps = [
   {
-    title: 'Choose your session'
+    title: 'Choose your session',
+    description: 'Pick solo, group, or get matched.'
   },
   {
-    title: 'Share style + budget'
+    title: 'Tell us what you’re looking for',
+    description: 'Share what kind of help you want so we can match you with the right experience.'
   },
   {
-    title: 'Quick virtual intro'
+    title: 'Quick virtual intro',
+    description: 'You’ll meet your stylist online first to align on goals and vibe.'
   },
   {
-    title: 'Meet in store + leave with better looks'
+    title: 'Meet in store',
+    description: 'Shop confidently and leave with better looks.'
   }
 ];
 
@@ -633,7 +637,7 @@ export default function Home() {
       setSuccessMessage(
         isStylist
           ? 'Application received — we’ll review and follow up soon.'
-          : 'You’re in — we’ll reach out when Rack Riot launches near you.'
+          : 'You’re in — we’ll let you know when Rack Riot launches in your city.'
       );
       setFormData(initialForm);
     } catch {
@@ -681,7 +685,7 @@ export default function Home() {
               </div>
 
               <p className="mt-4 text-[13px] font-medium text-[#91a9bf]">
-                Founding members get early access in launch cities.
+                Founding members get first access when Rack Riot launches in your city.
               </p>
 
               <button
@@ -689,7 +693,7 @@ export default function Home() {
                 onClick={scrollToHowItWorks}
                 className="mt-4 inline-flex items-center text-[14px] font-medium text-[#d7e2ec] transition hover:text-white"
               >
-                See how it works ↓
+                See how it will work ↓
               </button>
             </div>
           </div>
@@ -708,7 +712,8 @@ export default function Home() {
       <section className="bg-[#0D1B2A] px-6 pb-12 pt-10 text-white md:px-8 md:pb-14 md:pt-12 lg:px-12">
         <div id="how-it-works" className="mx-auto w-full max-w-[1100px]">
           <div className="mb-8 max-w-[660px]">
-            <h2 className="text-[32px] font-bold tracking-[-0.02em] text-white md:text-[42px]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">How Rack Riot will work</p>
+            <h2 className="mt-3 text-[32px] font-bold tracking-[-0.02em] text-white md:text-[42px]">
               Simple, human styling — built around your schedule.
             </h2>
             <p className="mt-4 max-w-[600px] text-[16px] leading-7 text-[#7B9BB5]">
@@ -720,7 +725,7 @@ export default function Home() {
             {options.map((option) => (
               <article
                 key={option.id}
-                className="group flex min-h-[136px] flex-col rounded-[24px] border border-[#3D5A7A]/55 bg-[linear-gradient(180deg,rgba(27,45,66,0.94)_0%,rgba(24,39,57,0.92)_100%)] p-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] transition-all duration-200 hover:-translate-y-[2px] hover:border-[#4c6b8c]/70 hover:shadow-[0_18px_36px_rgba(0,0,0,0.22)] lg:p-5"
+                className="group flex min-h-[136px] flex-col rounded-[24px] border border-[#3D5A7A]/55 bg-[linear-gradient(180deg,rgba(27,45,66,0.94)_0%,rgba(24,39,57,0.92)_100%)] p-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] transition-all duration-200 hover:border-[#4c6b8c]/70 hover:bg-[linear-gradient(180deg,rgba(29,48,71,0.96)_0%,rgba(24,39,57,0.94)_100%)] hover:shadow-[0_16px_32px_rgba(0,0,0,0.2)] lg:p-5"
               >
                 <h3 className="text-[20px] font-semibold leading-tight text-white">{option.title}</h3>
                 <p className="mt-2.5 max-w-[30ch] text-[14px] leading-6 text-[#8ca8c3]">{option.description}</p>
@@ -728,22 +733,23 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-7 rounded-[24px] border border-[#314a64]/45 bg-[linear-gradient(180deg,rgba(18,34,51,0.78)_0%,rgba(14,28,42,0.72)_100%)] px-4 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.12)] md:px-5 lg:px-6">
-            <div className="grid gap-2.5 md:grid-cols-4 md:gap-0">
+          <div className="mt-8">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               {processSteps.map((step, index) => (
                 <div
                   key={step.title}
-                  className="flex items-center gap-3 rounded-[18px] px-3 py-2.5 md:min-h-[72px] md:rounded-none md:px-4 md:py-3"
+                  className="rounded-[22px] border border-[#314a64]/40 bg-[linear-gradient(180deg,rgba(18,34,51,0.66)_0%,rgba(14,28,42,0.54)_100%)] px-4 py-4 shadow-[0_10px_26px_rgba(0,0,0,0.1)]"
                 >
-                  <span className="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border border-[#3D5A7A]/60 bg-[#13273a]/55 text-[11px] font-semibold text-[#b2c4d5]">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#3D5A7A]/55 bg-[#13273a]/45 text-[11px] font-semibold text-[#b2c4d5]">
                     {index + 1}
                   </span>
-                  <p className="text-[14px] font-medium leading-5 text-[#d9e5ef]">{step.title}</p>
+                  <h3 className="mt-3 text-[15px] font-semibold leading-5 text-[#edf4fa]">{step.title}</h3>
+                  <p className="mt-2 text-[13px] leading-6 text-[#8ca8c3]">{step.description}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-center text-[14px] leading-6 text-[#7B9BB5]">
-              Founding members get early access in launch cities.
+            <p className="mt-5 text-center text-[14px] leading-6 text-[#7B9BB5]">
+              Founding members get first access when Rack Riot launches in your city.
             </p>
           </div>
         </div>

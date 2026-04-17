@@ -11,10 +11,29 @@ React + Vite + Tailwind app for social shopping sessions with Supabase backend, 
 3. Apply migrations from code instead of the SQL editor:
    - `npm run db:migrate:waitlist:dev`
    - `npm run db:migrate:waitlist:prod`
-3. Copy env file and fill credentials:
+4. Copy env file and fill credentials:
    ```bash
    cp .env.example .env
    ```
+
+## Smoke Tests
+
+Use the dev smoke test before shipping logic or data-flow changes:
+
+```bash
+npm run test:smoke:dev
+```
+
+Current smoke coverage:
+- unified `waitlist` intake flow
+- client insert succeeds
+- stylist insert succeeds
+- same email can exist once per `type`
+- duplicate same-type insert is blocked
+
+Team rule:
+- run smoke tests for changes in logic, database behavior, validation, or submission flows
+- do not require smoke tests for purely visual/frontend-only changes
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 4. Add the same env vars in the Vercel dashboard under your project settings.

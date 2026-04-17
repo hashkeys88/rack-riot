@@ -27,8 +27,9 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-[#1B2D42] bg-[#0D1B2A]">
       <nav className="mx-auto flex h-[68px] w-full max-w-7xl items-center justify-between px-6 md:px-8 lg:px-12">
-        <Link to="/" onClick={handleLogoClick} className="cursor-pointer font-logo text-[28px] font-normal tracking-[0.05em] text-[#FF4D4D]">
-          RACK RIOT
+        <Link to="/" onClick={handleLogoClick} className="cursor-pointer font-logo text-[25px] font-normal tracking-[0.05em] sm:text-[27px]">
+          <span className="text-white">RACK </span>
+          <span className="text-[#FF4D4D]">RIOT</span>
         </Link>
 
         <div className="flex items-center gap-3">

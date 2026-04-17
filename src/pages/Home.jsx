@@ -354,7 +354,7 @@ function WaitlistModal({
             {isStylist && modalStep === 2 ? (
               <>
                 <div>
-                  <FieldLabel htmlFor="stylist-portfolio" label="Instagram / portfolio" required />
+                  <FieldLabel htmlFor="stylist-portfolio" label="Instagram / portfolio" />
                   <input
                     id="stylist-portfolio"
                     type="url"
@@ -544,7 +544,6 @@ export default function Home() {
     const normalizedName = formData.name.trim();
     const normalizedCity = formData.city.trim();
     const normalizedExperience = formData.experience.trim();
-    const normalizedPortfolio = formData.portfolio.trim();
     const normalizedYearsExperience = formData.yearsExperience.trim();
     const isStylist = modalType === 'stylist';
     const nextFieldErrors = {};
@@ -566,10 +565,6 @@ export default function Home() {
       nextFieldErrors.city = 'Please enter your city.';
     }
 
-    if (isStylist && !normalizedPortfolio) {
-      nextFieldErrors.portfolio = 'Please share your portfolio or Instagram link.';
-    }
-
     if (isStylist && !normalizedYearsExperience) {
       nextFieldErrors.yearsExperience = 'Please select your experience level.';
     }
@@ -589,37 +584,36 @@ export default function Home() {
 
     try {
       if (isStylist) {
-        const { data: existingApplication, error: lookupError } = await supabase
-          .from('stylist_applications')
-          .select('id')
-          .eq('email', normalizedEmail)
-          .maybeSingle();
-
-        if (lookupError) throw lookupError;
-
-        if (existingApplication) {
-          setWaitlistError("You've already applied as a stylist!");
-          return;
-        }
-
-        const { error } = await supabase.from('stylist_applications').insert({
-          full_name: normalizedName,
+        const portfolio = formData.portfolio.trim();
+        const { error } = await supabase.from('waitlist').insert({
           email: normalizedEmail,
-          city: normalizedCity,
-          instagram_handle: normalizedPortfolio,
-          years_experience: normalizedYearsExperience,
-          bio: normalizedExperience,
+          name: normalizedName || null,
+          city: normalizedCity || null,
+          experience: normalizedExperience || null,
+          years_experience: normalizedYearsExperience || null,
+          portfolio: portfolio || null,
+          type: 'stylist',
           status: 'pending'
         });
 
-        if (error) throw error;
+        if (error) {
+          const message = String(error.message || '').toLowerCase();
+          if (error.code === '23505' || message.includes('duplicate') || message.includes('unique')) {
+            setWaitlistError("You've already applied as a stylist!");
+            return;
+          }
+          throw error;
+        }
       } else {
         const payload = {
           email: normalizedEmail,
           name: normalizedName || null,
           city: normalizedCity || null,
           experience: null,
-          type: 'client'
+          years_experience: null,
+          portfolio: null,
+          type: 'client',
+          status: 'pending'
         };
 
         const { error } = await supabase.from('waitlist').insert(payload);
@@ -640,7 +634,8 @@ export default function Home() {
           : 'You’re in — we’ll let you know when Rack Riot launches in your city.'
       );
       setFormData(initialForm);
-    } catch {
+    } catch (error) {
+      console.error('Waitlist submission failed', error);
       setWaitlistError('Something went wrong, please try again.');
     } finally {
       setSubmitting(false);

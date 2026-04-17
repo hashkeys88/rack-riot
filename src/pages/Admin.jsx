@@ -39,8 +39,7 @@ export default function Admin() {
     async function loadData() {
       setLoading(true);
       try {
-        const [applicationRes, waitlistRes, bookingRes] = await Promise.all([
-          supabase.from('stylist_applications').select('*').order('created_at', { ascending: false }),
+        const [waitlistRes, bookingRes] = await Promise.all([
           supabase.from('waitlist').select('*').order('created_at', { ascending: false }),
           supabase
             .from('sessions')
@@ -48,13 +47,13 @@ export default function Admin() {
             .order('created_at', { ascending: false })
         ]);
 
-        if (applicationRes.error) throw applicationRes.error;
         if (waitlistRes.error) throw waitlistRes.error;
         if (bookingRes.error) throw bookingRes.error;
 
         if (!mounted) return;
-        setApplications(applicationRes.data || []);
-        setWaitlist(waitlistRes.data || []);
+        const entries = waitlistRes.data || [];
+        setApplications(entries.filter((row) => row.type === 'stylist'));
+        setWaitlist(entries.filter((row) => row.type === 'client'));
         setBookings(bookingRes.data || []);
       } catch {
         if (!mounted) return;
@@ -85,7 +84,7 @@ export default function Admin() {
 
   async function rejectApplication(id) {
     try {
-      const { error } = await supabase.from('stylist_applications').update({ status: 'rejected' }).eq('id', id);
+      const { error } = await supabase.from('waitlist').update({ status: 'rejected' }).eq('id', id).eq('type', 'stylist');
       if (error) throw error;
       setApplications((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'rejected' } : item)));
       toast.success('Application rejected');
@@ -103,18 +102,20 @@ export default function Admin() {
           action: 'approveStylist',
           applicationId: application.id,
           email: application.email,
-          fullName: application.full_name,
+          fullName: application.name,
           city: application.city,
-          bio: application.bio,
-          specialtyTags: application.specialty_tags || [],
-          rateExpectation: application.rate_expectation,
-          instagramHandle: application.instagram_handle
+          bio: application.experience,
+          specialtyTags: [],
+          rateExpectation: application.years_experience,
+          instagramHandle: application.portfolio
         })
       });
 
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || 'Could not approve application');
 
+      const { error: updateError } = await supabase.from('waitlist').update({ status: 'approved' }).eq('id', application.id).eq('type', 'stylist');
+      if (updateError) throw updateError;
       setApplications((prev) => prev.map((item) => (item.id === application.id ? { ...item, status: 'approved' } : item)));
       toast.success('Application approved');
     } catch (error) {
@@ -166,9 +167,9 @@ export default function Admin() {
               <tr className="text-riotText/70">
                 <th className="pb-2">Name</th>
                 <th className="pb-2">City</th>
-                <th className="pb-2">Instagram</th>
-                <th className="pb-2">Specialty</th>
-                <th className="pb-2">Rate</th>
+                <th className="pb-2">Portfolio</th>
+                <th className="pb-2">Experience</th>
+                <th className="pb-2">Years</th>
                 <th className="pb-2">Date Applied</th>
                 <th className="pb-2">Status</th>
                 <th className="pb-2">Actions</th>
@@ -182,11 +183,11 @@ export default function Admin() {
               ) : filteredApplications.length ? (
                 filteredApplications.map((application) => (
                   <tr key={application.id} className="border-t border-white/10">
-                    <td className="py-2">{application.full_name}</td>
+                    <td className="py-2">{application.name}</td>
                     <td className="py-2">{application.city}</td>
-                    <td className="py-2">{application.instagram_handle}</td>
-                    <td className="py-2">{(application.specialty_tags || []).join(', ') || '-'}</td>
-                    <td className="py-2">{application.rate_expectation || '-'}</td>
+                    <td className="py-2">{application.portfolio || '-'}</td>
+                    <td className="py-2">{application.experience || '-'}</td>
+                    <td className="py-2">{application.years_experience || '-'}</td>
                     <td className="py-2">{application.created_at ? new Date(application.created_at).toLocaleDateString() : '-'}</td>
                     <td className="py-2">
                       <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs ${statusBadge(application.status)}`}>{application.status}</span>

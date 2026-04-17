@@ -6,7 +6,15 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:reset:dev:intake": "node ./scripts/reset-dev-intake.mjs",
+    "db:test:waitlist:dev": "node ./scripts/test-waitlist-flow.mjs",
+    "db:reset:all:dev": "zsh ./scripts/apply-supabase-migration.sh dev supabase/migrations/20260416_reset_all.sql",
+    "db:reset:all:prod": "zsh ./scripts/apply-supabase-migration.sh prod supabase/migrations/20260416_reset_all.sql",
+    "db:migrate:waitlist:dev": "zsh ./scripts/apply-supabase-migration.sh dev supabase/migrations/20260416_unify_waitlist.sql",
+    "db:migrate:waitlist:prod": "zsh ./scripts/apply-supabase-migration.sh prod supabase/migrations/20260416_unify_waitlist.sql",
+    "db:rebuild:dev": "zsh ./scripts/apply-supabase-migration.sh dev supabase/migrations/20260416_reset_all.sql && zsh ./scripts/apply-supabase-migration.sh dev supabase/schema.sql",
+    "db:rebuild:prod": "zsh ./scripts/apply-supabase-migration.sh prod supabase/migrations/20260416_reset_all.sql && zsh ./scripts/apply-supabase-migration.sh prod supabase/schema.sql"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",

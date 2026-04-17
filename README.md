@@ -4,8 +4,13 @@ React + Vite + Tailwind app for social shopping sessions with Supabase backend, 
 
 ## Setup
 
-1. Create a Supabase project at [supabase.com](https://supabase.com).
-2. Run [`supabase/schema.sql`](/Users/rajat/Code/rack-riot/supabase/schema.sql) in the Supabase SQL editor.
+1. Create Supabase projects for dev and prod at [supabase.com](https://supabase.com).
+2. Put your direct Postgres connection strings in env vars:
+   - `SUPABASE_DB_URL_DEV`
+   - `SUPABASE_DB_URL_PROD`
+3. Apply migrations from code instead of the SQL editor:
+   - `npm run db:migrate:waitlist:dev`
+   - `npm run db:migrate:waitlist:prod`
 3. Copy env file and fill credentials:
    ```bash
    cp .env.example .env

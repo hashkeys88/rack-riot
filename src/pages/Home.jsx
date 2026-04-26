@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LockKeyhole, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
 
@@ -659,23 +660,21 @@ export default function Home() {
 
               <div className="mt-8 flex flex-wrap items-start gap-3">
                 <div className="flex flex-col items-center">
-                  <button
-                    type="button"
-                    onClick={() => openWaitlistModal('client')}
+                  <Link
+                    to="/signup/client"
                     className="inline-flex items-center gap-2 rounded-full bg-[#FF4D4D] px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-[#e03e3e] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
                   >
                     Book a Stylist
-                  </button>
+                  </Link>
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <button
-                    type="button"
-                    onClick={() => openWaitlistModal('stylist')}
+                  <Link
+                    to="/apply"
                     className="inline-flex items-center justify-center rounded-full border-[1.5px] border-white bg-transparent px-6 py-3 text-[14px] font-semibold text-white transition duration-150 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff4d4d]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1B2A]"
                   >
                     Apply as a Stylist
-                  </button>
+                  </Link>
                 </div>
               </div>
 

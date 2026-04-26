@@ -1,27 +1,13 @@
-import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const WAITLIST_MODAL_EVENT = 'rack-riot:open-waitlist';
-
 const Navbar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { user, profile, logout, loading } = useAuth();
   const role = profile?.role || null;
 
 
   function handleLogoClick() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function handleOpenWaitlist(event) {
-    event.preventDefault();
-    if (location.pathname !== '/') {
-      navigate('/');
-    }
-    window.setTimeout(() => {
-      window.dispatchEvent(new CustomEvent(WAITLIST_MODAL_EVENT, { detail: { type: 'client' } }));
-    }, 80);
   }
 
   return (
@@ -61,13 +47,12 @@ const Navbar = () => {
           ) : (
             <>
               {/* TODO: Add back "Find a Stylist", "Find a Buddy" as text links and "Log In" button once stylists are onboarded and features are live */}
-              <button
-                type="button"
-                onClick={handleOpenWaitlist}
+              <Link
+                to="/signup/client"
                 className="inline-flex h-11 items-center justify-center rounded-full bg-[#FF4D4D] px-6 text-[14px] font-semibold text-white transition hover:bg-[#e03e3e]"
               >
                 Book a Stylist
-              </button>
+              </Link>
             </>
           )}
         </div>

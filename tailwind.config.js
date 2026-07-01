@@ -4,27 +4,38 @@ export default {
   theme: {
     extend: {
       colors: {
-        riotBg: '#FFFFFF',
-        riotBgSecondary: '#F5F5F5',
-        riotCard: '#FFFFFF',
-        riotBorder: '#E8E8E8',
-        riotBorderDark: '#D0D0D0',
-        riotText: '#121212',
-        riotTextSecondary: '#666666',
-        riotTextMuted: '#999999',
-        riotAccent: '#FF4D4D',
-        riotAccentHover: '#E03E3E',
-        riotSuccess: '#22C55E',
-        riotWarning: '#F59E0B',
-        riotError: '#EF4444'
+        riotBg: '#F3F0E8',
+        riotBgSecondary: '#EAE5DA',
+        riotCard: '#FBF9F3',
+        riotBorder: '#D8D1C3',
+        riotBorderDark: '#B8AE9E',
+        riotText: '#172119',
+        riotTextSecondary: '#5F685F',
+        riotTextMuted: '#858C83',
+        riotAccent: '#C4482D',
+        riotAccentHover: '#9E351F',
+        riotSuccess: '#397A4B',
+        riotWarning: '#A66620',
+        riotError: '#B8362E',
+        atelier: {
+          paper: '#F3F0E8',
+          ink: '#172119',
+          forest: '#16231B',
+          citrus: '#D7FF57',
+          rust: '#C4482D',
+          clay: '#E5D6C5',
+          muted: '#5F685F'
+        }
       },
       fontFamily: {
-        display: ['DM Sans', 'sans-serif'],
-        body: ['DM Sans', 'sans-serif'],
-        logo: ['Bebas Neue', 'sans-serif']
+        display: ['Fraunces', 'Georgia', 'serif'],
+        editorial: ['Fraunces', 'Georgia', 'serif'],
+        body: ['Manrope', 'sans-serif'],
+        logo: ['Manrope', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'monospace']
       },
       boxShadow: {
-        riot: '0 1px 3px rgba(0, 0, 0, 0.08)'
+        riot: '0 18px 50px rgba(23, 33, 25, 0.08)'
       }
     }
   },

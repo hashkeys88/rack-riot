@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js';
 
 const serviceSupabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const anonSupabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY);
-const roles = ['client', 'stylist', 'admin'];
 
 function badRequest(res, message) {
   return res.status(400).json({ error: message });
@@ -38,51 +37,7 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'signup') {
-      if (!email || !password || !role) return badRequest(res, 'email, password, and role are required');
-      if (!roles.includes(role)) return badRequest(res, `role must be one of: ${roles.join(', ')}`);
-
-      const { data: created, error: createError } = await serviceSupabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: {
-          full_name: fullName || null,
-          city: city || null,
-          role
-        }
-      });
-
-      if (createError) throw createError;
-
-      const userId = created.user?.id;
-      if (!userId) throw new Error('Unable to create user');
-
-      const { error: profileError } = await serviceSupabase.from('users').insert({
-        id: userId,
-        email,
-        full_name: fullName || null,
-        city: city || null,
-        role,
-        style_tags: Array.isArray(styleTags) ? styleTags : [],
-        favorite_stores: Array.isArray(favoriteStores) ? favoriteStores : []
-      });
-
-      if (profileError) throw profileError;
-
-      if (role === 'stylist') {
-        const { error: stylistError } = await serviceSupabase.from('stylists').insert({
-          id: userId,
-          bio: bio || null,
-          specialty_tags: Array.isArray(specialtyTags) ? specialtyTags : [],
-          price_group: Number(priceGroup) || null,
-          price_private: Number(pricePrivate) || null,
-          available: true
-        });
-
-        if (stylistError) throw stylistError;
-      }
-
-      return res.status(201).json({ data: { id: userId, email, role } });
+      return res.status(410).json({ error: 'Use the public Supabase signup flow.' });
     }
 
     if (action === 'login') {
@@ -127,11 +82,16 @@ export default async function handler(req, res) {
       }
 
       const userId = application.auth_user_id;
-      const { error: stylistError } = await serviceSupabase
+      const { data: approvedStylist, error: stylistError } = await serviceSupabase
         .from('stylists')
         .update({ status: 'approved', available: true })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select('id')
+        .maybeSingle();
       if (stylistError) throw stylistError;
+      if (!approvedStylist) {
+        return res.status(409).json({ error: 'The stylist must confirm their email before approval.' });
+      }
 
       const { error: applicationError } = await serviceSupabase
         .from('stylist_applications')
@@ -151,32 +111,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'lookupLoginState') {
-      if (!email) return badRequest(res, 'email is required');
-
-      const normalizedEmail = String(email).trim().toLowerCase();
-      const [{ data: userRow, error: userError }, { data: applicationRow, error: applicationError }] = await Promise.all([
-        serviceSupabase.from('users').select('id, role').eq('email', normalizedEmail).maybeSingle(),
-        serviceSupabase
-          .from('stylist_applications')
-          .select('id, status')
-          .eq('email', normalizedEmail)
-          .eq('status', 'pending')
-          .maybeSingle()
-      ]);
-
-      if (userError) throw userError;
-      const missingApplicationTable =
-        applicationError &&
-        String(applicationError.message || '').toLowerCase().includes("could not find the table 'public.stylist_applications'");
-      if (applicationError && !missingApplicationTable) throw applicationError;
-
-      return res.status(200).json({
-        data: {
-          userExists: Boolean(userRow),
-          role: userRow?.role || null,
-          stylistUnderReview: missingApplicationTable ? false : Boolean(applicationRow)
-        }
-      });
+      return res.status(410).json({ error: 'Account lookup is no longer available.' });
     }
 
     return badRequest(res, 'Unsupported action');

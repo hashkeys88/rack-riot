@@ -6,17 +6,8 @@ const ProtectedRoute = ({ children, role }) => {
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          background: '#0a0a0a',
-          color: '#f5f0e8'
-        }}
-      >
-        <p>Loading...</p>
+      <div className="flex min-h-[calc(100vh-76px)] items-center justify-center bg-atelier-paper">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-atelier-muted">Loading your space...</p>
       </div>
     );
   }
@@ -31,17 +22,8 @@ const ProtectedRoute = ({ children, role }) => {
 
   if (role && role !== 'client' && !profile) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh',
-          background: '#0a0a0a',
-          color: '#f5f0e8'
-        }}
-      >
-        <p>Loading your profile...</p>
+      <div className="flex min-h-[calc(100vh-76px)] items-center justify-center bg-atelier-paper">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-atelier-muted">Loading your profile...</p>
       </div>
     );
   }

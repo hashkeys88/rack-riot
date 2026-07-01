@@ -255,9 +255,10 @@ export default function StylistDashboard() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-12 md:px-12">
-      <h1 className="text-[32px] font-bold">My Dashboard</h1>
-      <p className="mt-2 text-riotText/80">Manage bookings, profile, availability, and earnings.</p>
+    <section className="mx-auto max-w-[1320px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Stylist studio</p>
+      <h1 className="mt-3 text-[52px] font-semibold leading-none tracking-[-0.04em] sm:text-[64px]">My dashboard</h1>
+      <p className="mt-4 text-[15px] text-riotText/80">Manage your profile, availability, client requests, and earnings.</p>
 
       {underReview ? (
         <div className="mt-6 rounded-[18px] border border-amber-300/40 bg-amber-50 px-5 py-4 text-amber-950">
@@ -268,12 +269,12 @@ export default function StylistDashboard() {
         </div>
       ) : null}
 
-      <div className="mt-8 flex flex-wrap gap-8 border-b border-riotBorder bg-white px-2">
-        <button onClick={() => setActiveTab('overview')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'overview' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Overview</button>
-        <button onClick={() => setActiveTab('bookings')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'bookings' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Bookings</button>
-        <button onClick={() => setActiveTab('profile')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'profile' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>My Profile</button>
-        <button onClick={() => setActiveTab('availability')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'availability' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Availability</button>
-        <button onClick={() => setActiveTab('earnings')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'earnings' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Earnings</button>
+      <div className="mt-10 flex flex-wrap gap-x-7 gap-y-2 border-y border-atelier-ink/15 bg-transparent px-0">
+        <button onClick={() => setActiveTab('overview')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'overview' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Overview</button>
+        <button onClick={() => setActiveTab('bookings')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'bookings' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Bookings</button>
+        <button onClick={() => setActiveTab('profile')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'profile' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>My Profile</button>
+        <button onClick={() => setActiveTab('availability')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'availability' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Availability</button>
+        <button onClick={() => setActiveTab('earnings')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'earnings' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Earnings</button>
       </div>
 
       {activeTab === 'overview' ? (

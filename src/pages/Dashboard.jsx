@@ -677,9 +677,10 @@ export default function Dashboard() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-6 py-12 md:px-12">
-      <h1 className="text-[32px] font-bold">My Dashboard</h1>
-      <p className="mt-2 text-riotText/80">
+    <section className="mx-auto max-w-[1320px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Client space</p>
+      <h1 className="mt-3 text-[52px] font-semibold leading-none tracking-[-0.04em] sm:text-[64px]">My dashboard</h1>
+      <p className="mt-4 text-[15px] text-riotText/80">
         {profile?.full_name ? `Welcome back, ${profile.full_name}.` : 'Welcome back.'}
       </p>
 
@@ -700,12 +701,12 @@ export default function Dashboard() {
         </article>
       ) : null}
 
-      <div className="mt-8 flex flex-wrap gap-8 border-b border-riotBorder bg-white px-2">
+      <div className="mt-10 flex flex-wrap gap-x-7 gap-y-2 border-y border-atelier-ink/15 bg-transparent px-0">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-0 py-3 text-[14px] font-medium transition ${activeTab === tab.id ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}
+            className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] transition ${activeTab === tab.id ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}
           >
             {tab.label}
           </button>

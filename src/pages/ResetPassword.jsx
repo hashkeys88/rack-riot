@@ -39,7 +39,7 @@ export default function ResetPassword() {
   }
 
   if (loading) {
-    return <div className="flex min-h-[70vh] items-center justify-center">Loading...</div>;
+    return <div className="flex min-h-[70vh] items-center justify-center font-mono text-[11px] uppercase tracking-[0.18em] text-atelier-muted">Preparing your account...</div>;
   }
 
   if (!user) {
@@ -47,15 +47,15 @@ export default function ResetPassword() {
   }
 
   return (
-    <section className="min-h-[calc(100vh-72px)] bg-[#fbfbfb] px-6 py-16">
+    <section className="min-h-[calc(100vh-76px)] bg-atelier-paper px-6 py-12 sm:px-10 lg:py-20">
       <form
         onSubmit={submit}
-        className="mx-auto max-w-lg rounded-[28px] border border-riotBorder bg-white p-8 shadow-[0_18px_70px_rgba(0,0,0,0.07)]"
+        className="mx-auto max-w-[620px] border border-atelier-ink/20 bg-atelier-paper p-7 sm:p-12"
       >
-        <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Account setup</p>
-        <h1 className="mt-3 text-[36px] font-extrabold tracking-[-0.03em] text-riotText">Create your password</h1>
-        <p className="mt-3 text-[15px] leading-7 text-riotTextSecondary">
-          Set the password you will use to access your Rack Riot account.
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Account security</p>
+        <h1 className="mt-4 text-[48px] font-semibold leading-none tracking-[-0.04em] text-riotText">Set a new password</h1>
+        <p className="mt-5 max-w-md text-[15px] leading-7 text-riotTextSecondary">
+          Choose something memorable and unique to your Rack Riot account.
         </p>
 
         <div className="mt-8 space-y-5">
@@ -86,9 +86,9 @@ export default function ResetPassword() {
         <button
           type="submit"
           disabled={saving}
-          className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-full bg-riotAccent px-7 text-[14px] font-semibold text-white disabled:opacity-60"
+          className="atelier-button atelier-button-primary mt-8 w-full disabled:opacity-60"
         >
-          {saving ? 'Saving...' : 'Set password and continue'}
+          {saving ? 'Saving...' : 'Save and continue'}
         </button>
       </form>
     </section>

@@ -7,10 +7,11 @@ export default function AuthCallback() {
 
   if (loading || (user && !profile)) {
     return (
-      <section className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-[#f7f7f7] px-6">
+      <section className="flex min-h-[calc(100vh-76px)] items-center justify-center bg-atelier-paper px-6">
         <div className="text-center">
-          <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Email confirmed</p>
-          <h1 className="mt-3 text-[28px] font-extrabold tracking-[-0.03em] text-riotText">
+          <span className="mx-auto block h-3 w-3 animate-pulse rounded-full bg-atelier-citrus ring-8 ring-atelier-forest" />
+          <p className="mt-8 font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Email confirmed</p>
+          <h1 className="mt-4 text-[38px] font-semibold tracking-[-0.03em] text-riotText">
             Opening your dashboard...
           </h1>
         </div>

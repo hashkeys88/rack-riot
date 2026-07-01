@@ -156,9 +156,10 @@ export default function Admin() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-      <h1 className="text-[32px] font-bold">Admin Dashboard</h1>
-      <p className="mt-2 text-riotText/80">Manage applications, waitlist, and bookings.</p>
+    <section className="mx-auto max-w-[1400px] px-6 py-12 sm:px-10 lg:px-14 lg:py-16">
+      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Operations</p>
+      <h1 className="mt-3 text-[52px] font-semibold leading-none tracking-[-0.04em] sm:text-[64px]">Admin desk</h1>
+      <p className="mt-4 text-[15px] text-riotText/80">Review applications, demand, and upcoming activity.</p>
 
       <article className="riot-card mt-8">
         <div className="flex items-center justify-between gap-4">

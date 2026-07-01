@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     let query = supabase
       .from('stylists')
       .select('id, bio, specialty_tags, price_group, price_private, rating, review_count, available, users!inner(full_name, avatar_url, city)')
+      .eq('status', 'approved')
       .eq('available', true);
 
     if (city) {

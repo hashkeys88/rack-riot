@@ -8,10 +8,21 @@ function badRequest(res, message) {
   return res.status(400).json({ error: message });
 }
 
+async function authenticatedUser(req) {
+  const token = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (!token) return null;
+  const { data, error } = await supabase.auth.getUser(token);
+  return error ? null : data.user;
+}
+
 export default async function handler(req, res) {
+  const user = await authenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
   if (req.method === 'GET') {
     const { userId } = req.query;
     if (!userId) return badRequest(res, 'userId is required');
+    if (userId !== user.id) return res.status(403).json({ error: 'Forbidden' });
 
     try {
       const { data, error } = await supabase
@@ -33,6 +44,7 @@ export default async function handler(req, res) {
     if (!stylistId || !hostId || !sessionType || !date || !time) {
       return badRequest(res, 'stylistId, hostId, sessionType, date, and time are required');
     }
+    if (hostId !== user.id) return res.status(403).json({ error: 'Forbidden' });
 
     if (!validSessionTypes.includes(sessionType)) {
       return badRequest(res, `sessionType must be one of: ${validSessionTypes.join(', ')}`);

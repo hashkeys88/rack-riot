@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -13,7 +13,9 @@ export default function CityAutocompleteInput({
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const cacheRef = useRef(new Map());
+  const listboxId = useId();
 
   useEffect(() => {
     const query = value.trim();
@@ -21,6 +23,7 @@ export default function CityAutocompleteInput({
     if (query.length < 2) {
       setSuggestions([]);
       setLoading(false);
+      setActiveIndex(-1);
       return;
     }
 
@@ -28,6 +31,7 @@ export default function CityAutocompleteInput({
     if (cachedSuggestions) {
       setSuggestions(cachedSuggestions);
       setLoading(false);
+      setActiveIndex(-1);
       return;
     }
 
@@ -75,6 +79,7 @@ export default function CityAutocompleteInput({
         const uniqueSuggestions = [...new Set(nextSuggestions)];
         cacheRef.current.set(query.toLowerCase(), uniqueSuggestions);
         setSuggestions(uniqueSuggestions);
+        setActiveIndex(-1);
       } catch (error) {
         if (error.name !== 'AbortError') {
           setSuggestions([]);
@@ -94,6 +99,28 @@ export default function CityAutocompleteInput({
     onChange(city);
     setShowSuggestions(false);
     setSuggestions([]);
+    setActiveIndex(-1);
+  }
+
+  function handleKeyDown(event) {
+    if (!showSuggestions || !suggestions.length) {
+      if (event.key === 'ArrowDown' && suggestions.length) setShowSuggestions(true);
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setActiveIndex((current) => (current + 1) % suggestions.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setActiveIndex((current) => (current <= 0 ? suggestions.length - 1 : current - 1));
+    } else if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault();
+      handleSelect(suggestions[activeIndex]);
+    } else if (event.key === 'Escape') {
+      setShowSuggestions(false);
+      setActiveIndex(-1);
+    }
   }
 
   return (
@@ -107,12 +134,18 @@ export default function CityAutocompleteInput({
           setShowSuggestions(true);
         }}
         onFocus={() => setShowSuggestions(true)}
+        onKeyDown={handleKeyDown}
         onBlur={() => {
           onBlur?.();
           window.setTimeout(() => setShowSuggestions(false), 120);
         }}
         placeholder={placeholder}
         autoComplete="off"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded={showSuggestions && suggestions.length > 0}
+        aria-controls={listboxId}
+        aria-activedescendant={activeIndex >= 0 ? `${listboxId}-${activeIndex}` : undefined}
         className={className}
       />
 
@@ -123,14 +156,19 @@ export default function CityAutocompleteInput({
       ) : null}
 
       {showSuggestions && suggestions.length > 0 ? (
-        <div className="absolute z-10 mt-2 max-h-60 w-full overflow-hidden rounded-[18px] border border-riotBorder bg-white shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
-          {suggestions.map((city) => (
+        <div id={listboxId} role="listbox" className="absolute z-10 mt-2 max-h-60 w-full overflow-hidden border border-atelier-ink/20 bg-atelier-paper shadow-[8px_8px_0_rgba(23,33,25,0.16)]">
+          {suggestions.map((city, index) => (
             <button
               key={city}
+              id={`${listboxId}-${index}`}
+              role="option"
+              aria-selected={activeIndex === index}
               type="button"
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => handleSelect(city)}
-              className="block w-full px-4 py-3 text-left text-[14px] font-medium text-riotText transition hover:bg-[#f7f7f7]"
+              className={`block w-full px-4 py-3 text-left text-[14px] font-medium text-riotText transition ${
+                activeIndex === index ? 'bg-atelier-citrus' : 'hover:bg-atelier-clay'
+              }`}
             >
               {city}
             </button>

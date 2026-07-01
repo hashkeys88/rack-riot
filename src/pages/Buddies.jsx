@@ -20,7 +20,14 @@ export default function Buddies() {
     setLoading(true);
     setError('');
 
-    const payload = { email: email.trim().toLowerCase(), city };
+    const payload = {
+      email: email.trim().toLowerCase(),
+      city,
+      type: 'client',
+      status: 'pending',
+      intent_type: 'wardrobe',
+      session_type: 'buddy'
+    };
 
     try {
       const { error: insertError } = await supabase.from('waitlist').insert(payload);

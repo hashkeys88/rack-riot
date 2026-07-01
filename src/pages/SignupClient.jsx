@@ -161,13 +161,15 @@ export default function SignupClient() {
                   Your styling brief is ready
                 </h1>
                 <p className="mt-4 text-[15px] leading-7 text-[#b7c8d8]">
-                  We’ll use this brief to look for the right stylist and shopping format in your city.
+                  {submittedMatch.emailConfirmationRequired
+                    ? `${submittedMatch.name.split(/\s+/)[0]}, check your inbox at ${submittedMatch.email}. Click the confirmation link in the email, then return here to log in.`
+                    : 'We’ll use this brief to look for the right stylist and shopping format in your city.'}
                 </p>
                 <Link
-                  to="/login"
+                  to={submittedMatch.emailConfirmationRequired ? '/login' : '/dashboard'}
                   className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-riotAccent px-7 text-[15px] font-semibold text-white transition hover:bg-riotAccentHover"
                 >
-                  Log in
+                  {submittedMatch.emailConfirmationRequired ? 'Go to login' : 'Open your dashboard'}
                 </Link>
               </aside>
 

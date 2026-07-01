@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { dashboardPathForRole } from '../lib/accountRole';
 import { supabase } from '../lib/supabase';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [error, setError] = useState('');
@@ -33,7 +34,8 @@ export default function ResetPassword() {
       return;
     }
 
-    navigate('/stylist-dashboard', { replace: true });
+    const role = profile?.role || user?.user_metadata?.role || 'client';
+    navigate(dashboardPathForRole(role), { replace: true });
   }
 
   if (loading) {
@@ -53,7 +55,7 @@ export default function ResetPassword() {
         <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Account setup</p>
         <h1 className="mt-3 text-[36px] font-extrabold tracking-[-0.03em] text-riotText">Create your password</h1>
         <p className="mt-3 text-[15px] leading-7 text-riotTextSecondary">
-          Set the password you will use to access your Rack Riot stylist dashboard.
+          Set the password you will use to access your Rack Riot account.
         </p>
 
         <div className="mt-8 space-y-5">

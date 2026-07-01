@@ -39,7 +39,8 @@ export default function Admin() {
     async function loadData() {
       setLoading(true);
       try {
-        const [waitlistRes, bookingRes] = await Promise.all([
+        const [applicationRes, waitlistRes, bookingRes] = await Promise.all([
+          supabase.from('stylist_applications').select('*').order('created_at', { ascending: false }),
           supabase.from('waitlist').select('*').order('created_at', { ascending: false }),
           supabase
             .from('sessions')
@@ -47,12 +48,13 @@ export default function Admin() {
             .order('created_at', { ascending: false })
         ]);
 
+        if (applicationRes.error) throw applicationRes.error;
         if (waitlistRes.error) throw waitlistRes.error;
         if (bookingRes.error) throw bookingRes.error;
 
         if (!mounted) return;
         const entries = waitlistRes.data || [];
-        setApplications(entries.filter((row) => row.type === 'stylist'));
+        setApplications(applicationRes.data || []);
         setWaitlist(entries.filter((row) => row.type === 'client'));
         setBookings(bookingRes.data || []);
       } catch {
@@ -84,7 +86,7 @@ export default function Admin() {
 
   async function rejectApplication(id) {
     try {
-      const { error } = await supabase.from('waitlist').update({ status: 'rejected' }).eq('id', id).eq('type', 'stylist');
+      const { error } = await supabase.from('stylist_applications').update({ status: 'rejected' }).eq('id', id);
       if (error) throw error;
       setApplications((prev) => prev.map((item) => (item.id === id ? { ...item, status: 'rejected' } : item)));
       toast.success('Application rejected');
@@ -95,29 +97,37 @@ export default function Admin() {
 
   async function approveApplication(application) {
     try {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Admin session expired. Please log in again.');
+
       const response = await fetch('/api/auth', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
         body: JSON.stringify({
           action: 'approveStylist',
           applicationId: application.id,
           email: application.email,
-          fullName: application.name,
+          fullName: application.full_name,
           city: application.city,
-          bio: application.experience,
-          specialtyTags: [],
-          rateExpectation: application.years_experience,
-          instagramHandle: application.portfolio
+          bio: application.bio,
+          specialtyTags: application.specialties,
+          yearsExperience: application.years_experience,
+          availability: application.availability,
+          portfolio: application.portfolio,
+          photoUrl: application.photo_url
         })
       });
 
       const body = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(body.error || 'Could not approve application');
 
-      const { error: updateError } = await supabase.from('waitlist').update({ status: 'approved' }).eq('id', application.id).eq('type', 'stylist');
-      if (updateError) throw updateError;
       setApplications((prev) => prev.map((item) => (item.id === application.id ? { ...item, status: 'approved' } : item)));
-      toast.success('Application approved');
+      toast.success('Application approved. The stylist profile can now be published.');
     } catch (error) {
       const message = String(error?.message || '');
       if (message.toLowerCase().includes('email')) {
@@ -183,10 +193,10 @@ export default function Admin() {
               ) : filteredApplications.length ? (
                 filteredApplications.map((application) => (
                   <tr key={application.id} className="border-t border-white/10">
-                    <td className="py-2">{application.name}</td>
+                    <td className="py-2">{application.full_name}</td>
                     <td className="py-2">{application.city}</td>
                     <td className="py-2">{application.portfolio || '-'}</td>
-                    <td className="py-2">{application.experience || '-'}</td>
+                    <td className="py-2">{(application.specialties || []).join(', ') || '-'}</td>
                     <td className="py-2">{application.years_experience || '-'}</td>
                     <td className="py-2">{application.created_at ? new Date(application.created_at).toLocaleDateString() : '-'}</td>
                     <td className="py-2">

@@ -1,13 +1,19 @@
+import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { user, profile, logout, loading } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const role = profile?.role || null;
-
 
   function handleLogoClick() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+    await logout();
   }
 
   return (
@@ -23,7 +29,11 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-3">
-          {user && role && !loading ? (
+          {loading || isLoggingOut || (user && !profile) ? (
+            <span className="inline-flex h-10 items-center px-3 text-[14px] font-semibold text-[#b7c8d8]">
+              {isLoggingOut ? 'Logging out...' : ''}
+            </span>
+          ) : user && role ? (
             <>
               {role === 'stylist' ? (
                 <NavLink to="/stylist-dashboard" className={({ isActive }) => `rounded-md px-3 py-1.5 text-[14px] font-medium transition ${isActive ? 'bg-riotAccent text-white' : 'border border-[#3D5A7A] text-[#7B9BB5] hover:text-white'}`}>
@@ -40,16 +50,21 @@ const Navbar = () => {
                   Dashboard
                 </NavLink>
               ) : null}
-              <button onClick={logout} className="rounded-md px-3 py-1.5 text-[14px] font-semibold text-[#7B9BB5] transition hover:text-white hover:underline">
+              <button onClick={handleLogout} className="rounded-md px-3 py-1.5 text-[14px] font-semibold text-[#7B9BB5] transition hover:text-white hover:underline">
                 Log Out
               </button>
             </>
           ) : (
             <>
-              {/* TODO: Add back "Find a Stylist", "Find a Buddy" as text links and "Log In" button once stylists are onboarded and features are live */}
+              <Link
+                to="/login"
+                className="inline-flex h-10 items-center justify-center rounded-full border border-[#3D5A7A] px-4 text-[14px] font-semibold text-[#b7c8d8] transition hover:border-[#6f8baa] hover:text-white"
+              >
+                Log in
+              </Link>
               <Link
                 to="/signup/client"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-[#FF4D4D] px-6 text-[14px] font-semibold text-white transition hover:bg-[#e03e3e]"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-[#FF4D4D] px-4 text-[14px] font-semibold text-white transition hover:bg-[#e03e3e] sm:px-6"
               >
                 Book a Stylist
               </Link>

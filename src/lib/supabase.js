@@ -14,7 +14,13 @@ const fallbackClient = {
     signOut: async () => ({ error: missingEnvError }),
     signInWithPassword: async () => ({ data: null, error: missingEnvError }),
     signUp: async () => ({ data: null, error: missingEnvError }),
+    updateUser: async () => ({ data: null, error: missingEnvError }),
     resetPasswordForEmail: async () => ({ data: null, error: missingEnvError })
+  },
+  storage: {
+    from() {
+      throw missingEnvError;
+    }
   },
   from() {
     throw missingEnvError;

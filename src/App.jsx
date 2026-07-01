@@ -7,11 +7,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import Admin from './pages/Admin';
 import Apply from './pages/Apply';
+import AuthCallback from './pages/AuthCallback';
 import Book from './pages/Book';
 import Buddies from './pages/Buddies';
 import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import Signup from './pages/Signup';
 import SignupClient from './pages/SignupClient';
 import Stylists from './pages/Stylists';
@@ -27,8 +29,11 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/stylists" element={<Stylists />} />
+              <Route path="/stylists/apply" element={<Navigate to="/apply" replace />} />
               <Route path="/buddies" element={<Buddies />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signup/client" element={<SignupClient />} />
               <Route path="/apply" element={<Apply />} />
@@ -68,7 +73,7 @@ export default function App() {
             </Routes>
           </main>
           <Footer />
-          <ToastContainer theme="dark" position="bottom-right" autoClose={2300} />
+          <ToastContainer theme="light" position="top-center" autoClose={3500} />
         </div>
       </Router>
     </AuthProvider>

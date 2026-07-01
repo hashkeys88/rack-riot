@@ -28,8 +28,10 @@ export default async function handler(req, res) {
     pricePrivate,
     accessToken,
     applicationId,
-    rateExpectation,
-    instagramHandle
+    yearsExperience,
+    availability,
+    portfolio,
+    photoUrl
   } = req.body || {};
 
   if (!action) return badRequest(res, 'action is required');
@@ -100,57 +102,52 @@ export default async function handler(req, res) {
 
     if (action === 'approveStylist') {
       if (!applicationId) return badRequest(res, 'applicationId is required');
-      if (!email) return badRequest(res, 'email is required to create auth user');
 
-      const temporaryPassword = `RackRiot!${Math.random().toString(36).slice(2, 10)}9A`;
-      const normalizedEmail = String(email).trim().toLowerCase();
+      const adminToken = String(req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+      const { data: authData, error: authError } = await serviceSupabase.auth.getUser(adminToken);
+      if (authError || !authData.user) return res.status(401).json({ error: 'Unauthorized' });
 
-      const { data: created, error: createError } = await serviceSupabase.auth.admin.createUser({
-        email: normalizedEmail,
-        password: temporaryPassword,
-        email_confirm: true,
-        user_metadata: {
-          full_name: fullName || null,
-          city: city || null,
-          role: 'stylist'
-        }
-      });
-      if (createError) throw createError;
+      const { data: adminProfile, error: adminError } = await serviceSupabase
+        .from('users')
+        .select('role')
+        .eq('id', authData.user.id)
+        .maybeSingle();
+      if (adminError || adminProfile?.role !== 'admin') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
 
-      const userId = created.user?.id;
-      if (!userId) throw new Error('Unable to create stylist auth user');
+      const { data: application, error: applicationLookupError } = await serviceSupabase
+        .from('stylist_applications')
+        .select('auth_user_id')
+        .eq('id', applicationId)
+        .maybeSingle();
+      if (applicationLookupError) throw applicationLookupError;
+      if (!application?.auth_user_id) {
+        return badRequest(res, 'This legacy application is not linked to a stylist account.');
+      }
 
-      const parsedRate = typeof rateExpectation === 'string' ? rateExpectation.match(/[0-9]+/) : null;
-      const baseRate = parsedRate ? Number(parsedRate[0]) : null;
-
-      const { error: usersError } = await serviceSupabase.from('users').upsert({
-        id: userId,
-        email: normalizedEmail,
-        full_name: fullName || null,
-        city: city || null,
-        role: 'stylist',
-        style_tags: Array.isArray(specialtyTags) ? specialtyTags : []
-      });
-      if (usersError) throw usersError;
-
-      const { error: stylistError } = await serviceSupabase.from('stylists').upsert({
-        id: userId,
-        bio: bio || null,
-        specialty_tags: Array.isArray(specialtyTags) ? specialtyTags : [],
-        price_group: baseRate ? baseRate * 2 : null,
-        price_private: baseRate,
-        status: 'approved',
-        available: true
-      });
+      const userId = application.auth_user_id;
+      const { error: stylistError } = await serviceSupabase
+        .from('stylists')
+        .update({ status: 'approved', available: true })
+        .eq('id', userId);
       if (stylistError) throw stylistError;
 
       const { error: applicationError } = await serviceSupabase
         .from('stylist_applications')
-        .update({ status: 'approved', email: normalizedEmail, instagram_handle: instagramHandle || null })
+        .update({
+          status: 'approved',
+          approved_at: new Date().toISOString()
+        })
         .eq('id', applicationId);
       if (applicationError) throw applicationError;
 
-      return res.status(200).json({ data: { userId, temporaryPassword } });
+      return res.status(200).json({
+        data: {
+          userId,
+          status: 'approved'
+        }
+      });
     }
 
     if (action === 'lookupLoginState') {

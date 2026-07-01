@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import TagPill from '../components/TagPill';
 import { useAuth } from '../context/AuthContext';
 import mockStylists from '../data/mockStylists';
+import { uploadClientProfilePhoto } from '../lib/onboarding';
 import { supabase } from '../lib/supabase';
 
 const tabs = [
@@ -345,6 +346,8 @@ export default function Dashboard() {
   const [loadingMatches, setLoadingMatches] = useState(true);
   const [loadingStylists, setLoadingStylists] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState('');
   const [dismissWelcome, setDismissWelcome] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [pendingMatches, setPendingMatches] = useState([]);
@@ -633,20 +636,37 @@ export default function Dashboard() {
     }));
   }
 
+  function startBooking(stylist) {
+    if (!profile?.avatar_url) {
+      setActiveTab('profile');
+      toast.info('Add a profile photo before booking an in-person styling session.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setBookingStylist(stylist);
+  }
+
   async function saveProfile() {
     if (!user?.id) return;
     setSavingProfile(true);
     try {
+      const avatarUrl = profilePhoto
+        ? await uploadClientProfilePhoto({ file: profilePhoto, email: profile?.email || user.email })
+        : profile?.avatar_url || null;
       const { error } = await supabase
         .from('users')
         .update({
           full_name: profileForm.fullName.trim(),
           city: profileForm.city.trim(),
           style_tags: profileForm.styleTags,
-          favorite_stores: profileForm.favoriteStores
+          favorite_stores: profileForm.favoriteStores,
+          avatar_url: avatarUrl
         })
         .eq('id', user.id);
       if (error) throw error;
+      setProfilePhoto(null);
+      setProfilePhotoPreview('');
       await refreshProfile();
       toast.success('Profile saved');
     } catch {
@@ -659,7 +679,9 @@ export default function Dashboard() {
   return (
     <section className="mx-auto max-w-6xl px-6 py-12 md:px-12">
       <h1 className="text-[32px] font-bold">My Dashboard</h1>
-      <p className="mt-2 text-riotText/80">Welcome back, {profile?.full_name || 'Client'}.</p>
+      <p className="mt-2 text-riotText/80">
+        {profile?.full_name ? `Welcome back, ${profile.full_name}.` : 'Welcome back.'}
+      </p>
 
       {showWelcomeBanner ? (
         <article className="riot-card mt-6">
@@ -824,7 +846,7 @@ export default function Dashboard() {
                   </div>
                   <p className="mt-2 text-[13px] font-medium text-riotText/80">Solo ${stylist.price_private || 75} · Group ${stylist.price_group || 150}</p>
                   <p className="mt-1 text-[13px] font-light text-riotText/70">{getBioSnippet(stylist)}</p>
-                  <button onClick={() => setBookingStylist(stylist)} className="mt-3 rounded-md bg-riotAccent px-4 py-2 text-sm font-semibold text-black">
+                  <button onClick={() => startBooking(stylist)} className="mt-3 rounded-md bg-riotAccent px-4 py-2 text-sm font-semibold text-black">
                     Book
                   </button>
                 </article>
@@ -931,8 +953,53 @@ export default function Dashboard() {
       {activeTab === 'profile' ? (
         <article className="riot-card mt-6 space-y-4">
           <h2 className="text-xl font-semibold text-riotAccent">My Profile</h2>
-          <input value={profileForm.fullName} onChange={(event) => setProfileForm((prev) => ({ ...prev, fullName: event.target.value }))} placeholder="Full name" className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
-          <input value={profileForm.city} onChange={(event) => setProfileForm((prev) => ({ ...prev, city: event.target.value }))} placeholder="City" className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
+          <div className="flex items-center gap-4">
+            {(profilePhotoPreview || profile?.avatar_url) ? (
+              <img src={profilePhotoPreview || profile.avatar_url} alt="Your profile" className="h-20 w-20 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-black/30 text-2xl font-bold">
+                {firstName(profileForm.fullName).charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div>
+              <label htmlFor="profile-photo" className="inline-flex cursor-pointer rounded-full border border-white/20 px-4 py-2 text-sm font-semibold transition hover:border-riotAccent">
+                {(profilePhotoPreview || profile?.avatar_url) ? 'Change photo' : 'Upload photo'}
+              </label>
+              <input
+                id="profile-photo"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.target.files?.[0] || null;
+                  if (!file) return;
+                  if (file.size > 5 * 1024 * 1024) {
+                    toast.error('Please keep the photo under 5 MB');
+                    return;
+                  }
+                  if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview);
+                  setProfilePhoto(file);
+                  setProfilePhotoPreview(URL.createObjectURL(file));
+                }}
+              />
+              <p className="mt-2 text-xs text-riotText/60">JPG, PNG, or WebP under 5 MB.</p>
+              {!profile?.avatar_url ? (
+                <p className="mt-1 text-xs font-semibold text-riotAccent">Required before an in-person booking.</p>
+              ) : null}
+            </div>
+          </div>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-riotText/80">Full name</span>
+            <input value={profileForm.fullName} onChange={(event) => setProfileForm((prev) => ({ ...prev, fullName: event.target.value }))} placeholder="Full name" autoComplete="name" className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-riotText/80">Email</span>
+            <input value={profile?.email || user?.email || ''} readOnly className="w-full cursor-not-allowed rounded-md border border-white/10 bg-black/20 px-3 py-2 text-riotText/70" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-riotText/80">City</span>
+            <input value={profileForm.city} onChange={(event) => setProfileForm((prev) => ({ ...prev, city: event.target.value }))} placeholder="City" autoComplete="address-level2" className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2" />
+          </label>
           <div>
             <p className="mb-2 text-sm text-riotText/80">Style tags</p>
             <TogglePills options={styleTagOptions} selected={profileForm.styleTags} onToggle={toggleStyleTag} />

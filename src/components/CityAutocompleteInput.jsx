@@ -5,6 +5,7 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 export default function CityAutocompleteInput({
   value,
   onChange,
+  onBlur,
   inputId,
   placeholder = 'City',
   className = ''
@@ -17,7 +18,7 @@ export default function CityAutocompleteInput({
   useEffect(() => {
     const query = value.trim();
 
-    if (!MAPBOX_ACCESS_TOKEN || query.length < 1) {
+    if (query.length < 2) {
       setSuggestions([]);
       setLoading(false);
       return;
@@ -35,17 +36,22 @@ export default function CityAutocompleteInput({
       setLoading(true);
 
       try {
-        const params = new URLSearchParams({
-          access_token: MAPBOX_ACCESS_TOKEN,
+        const mapboxParams = new URLSearchParams({
+          access_token: MAPBOX_ACCESS_TOKEN || '',
           autocomplete: 'true',
           types: 'place',
           limit: '5'
         });
-
-        const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params.toString()}`,
-          { signal: controller.signal }
-        );
+        const photonParams = new URLSearchParams({
+          q: query,
+          limit: '5',
+          layer: 'city'
+        });
+        const response = await fetch(MAPBOX_ACCESS_TOKEN
+          ? `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${mapboxParams.toString()}`
+          : `https://photon.komoot.io/api/?${photonParams.toString()}`, {
+          signal: controller.signal
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch city suggestions');
@@ -53,12 +59,22 @@ export default function CityAutocompleteInput({
 
         const data = await response.json();
         const nextSuggestions = (data.features || [])
-          .filter((feature) => Array.isArray(feature.place_type) && feature.place_type.includes('place'))
-          .map((feature) => feature.place_name)
+          .filter((feature) => (
+            MAPBOX_ACCESS_TOKEN
+              ? Array.isArray(feature.place_type) && feature.place_type.includes('place')
+              : feature.properties?.type === 'city'
+          ))
+          .map((feature) => {
+            if (MAPBOX_ACCESS_TOKEN) return feature.place_name;
+
+            const { name, state, country } = feature.properties || {};
+            return [name, state, country].filter(Boolean).join(', ');
+          })
           .filter(Boolean);
 
-        cacheRef.current.set(query.toLowerCase(), nextSuggestions);
-        setSuggestions(nextSuggestions);
+        const uniqueSuggestions = [...new Set(nextSuggestions)];
+        cacheRef.current.set(query.toLowerCase(), uniqueSuggestions);
+        setSuggestions(uniqueSuggestions);
       } catch (error) {
         if (error.name !== 'AbortError') {
           setSuggestions([]);
@@ -92,6 +108,7 @@ export default function CityAutocompleteInput({
         }}
         onFocus={() => setShowSuggestions(true)}
         onBlur={() => {
+          onBlur?.();
           window.setTimeout(() => setShowSuggestions(false), 120);
         }}
         placeholder={placeholder}

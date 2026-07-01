@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { dashboardPathForRole, resolveAccountRole } from '../lib/accountRole';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
   const [error, setError] = useState(null);
+  const [notice, setNotice] = useState(null);
 
   async function handleLogin() {
     if (!email || !password) {
@@ -21,6 +22,7 @@ export default function Login() {
 
     setLoading(true);
     setError(null);
+    setNotice(null);
 
     try {
       const normalizedEmail = email.toLowerCase().trim();
@@ -37,16 +39,8 @@ export default function Login() {
         setError('Something went wrong. Please try again.');
         return;
       }
-      const hintedRole = data.user?.user_metadata?.role;
-      if (hintedRole === 'stylist') {
-        window.location.replace('/stylist-dashboard');
-        return;
-      }
-      if (hintedRole === 'admin') {
-        window.location.replace('/admin');
-        return;
-      }
-      window.location.replace('/dashboard');
+      const role = await resolveAccountRole(data.user);
+      window.location.replace(dashboardPathForRole(role));
     } catch (e) {
       setError(String(e?.message || 'Something went wrong. Please try again.'));
     } finally {
@@ -62,10 +56,14 @@ export default function Login() {
 
     setSendingReset(true);
     setError(null);
+    setNotice(null);
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim());
+      const normalizedEmail = email.toLowerCase().trim();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
       if (resetError) throw resetError;
-      toast.success('Password reset email sent!');
+      setNotice(`If an account exists for ${normalizedEmail}, you'll receive a password reset link shortly.`);
     } catch (e) {
       setError(String(e?.message || 'Could not send reset email'));
     } finally {
@@ -73,18 +71,27 @@ export default function Login() {
     }
   }
 
-  if (!authLoading && user) {
-    return <Navigate to="/dashboard" replace />;
+  if (!authLoading && user && !loading) {
+    if (!profile) {
+      return (
+        <section className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-[#f7f7f7]">
+          <p className="text-[15px] font-semibold text-riotTextSecondary">Loading your dashboard...</p>
+        </section>
+      );
+    }
+    return <Navigate to={dashboardPathForRole(profile.role)} replace />;
   }
 
   return (
-    <section className="min-h-[calc(100vh-60px)] bg-riotBgSecondary px-6 py-12">
-      <div className="mx-auto max-w-[440px] rounded-xl border border-riotBorder bg-white p-10 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
-        <p className="font-logo text-[22px] text-riotAccent">Rack Riot</p>
-        <h1 className="mt-3 text-[24px] font-bold">Log In</h1>
-        <p className="mt-1 text-[14px] text-riotTextSecondary">Access your sessions and dashboard.</p>
+    <section className="min-h-[calc(100vh-72px)] bg-[#f7f7f7] px-6 py-12 md:py-20">
+      <div className="mx-auto max-w-[460px] overflow-hidden rounded-[28px] border border-riotBorder bg-white shadow-[0_24px_80px_rgba(0,0,0,0.09)]">
+        <div className="bg-[#0D1B2A] px-7 py-8 text-white md:px-10">
+          <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-[#ff9c9c]">Welcome back</p>
+          <h1 className="mt-3 text-[32px] font-extrabold tracking-[-0.03em] text-white">Log in to Rack Riot</h1>
+          <p className="mt-2 text-[15px] leading-6 text-[#b7c8d8]">Access your profile and dashboard.</p>
+        </div>
 
-        <div className="mt-6 space-y-4">
+        <div className="space-y-4 p-7 md:p-10">
         <input
           value={email}
           type="email"
@@ -92,11 +99,12 @@ export default function Login() {
           onChange={(event) => {
             setEmail(event.target.value);
             if (error) setError(null);
+            if (notice) setNotice(null);
           }}
-          className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2"
+          className="min-h-[54px] w-full rounded-[18px] border border-riotBorder bg-white px-4 py-3 text-[15px] font-medium text-riotText outline-none transition focus:border-riotAccent focus:ring-4 focus:ring-riotAccent/10"
         />
 
-        <div className="flex gap-2">
+        <div className="flex overflow-hidden rounded-[18px] border border-riotBorder bg-white focus-within:border-riotAccent focus-within:ring-4 focus-within:ring-riotAccent/10">
           <input
             value={password}
             type={showPassword ? 'text' : 'password'}
@@ -105,25 +113,26 @@ export default function Login() {
               setPassword(event.target.value);
               if (error) setError(null);
             }}
-            className="flex-1 rounded-md border border-white/20 bg-black/40 px-3 py-2"
+            className="min-h-[54px] min-w-0 flex-1 bg-transparent px-4 py-3 text-[15px] font-medium text-riotText outline-none"
           />
-          <button onClick={() => setShowPassword((prev) => !prev)} className="rounded-md border border-white/20 px-3 py-2 text-sm">
+          <button onClick={() => setShowPassword((prev) => !prev)} className="px-4 text-[13px] font-semibold text-riotTextSecondary transition hover:text-riotText">
             {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
 
-        <button onClick={handleLogin} disabled={loading} className="w-full rounded-md bg-riotAccent px-4 py-3 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover disabled:opacity-60">
+        <button onClick={handleLogin} disabled={loading} className="min-h-[52px] w-full rounded-full bg-riotAccent px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-riotAccentHover disabled:opacity-60">
           {loading ? 'Logging in...' : 'Log In'}
         </button>
-        <button onClick={handleReset} disabled={sendingReset} className="text-[14px] text-riotAccent transition hover:underline disabled:opacity-60">
+        <button onClick={handleReset} disabled={sendingReset} className="text-[14px] font-semibold text-riotAccent transition hover:underline disabled:opacity-60">
           {sendingReset ? 'Sending...' : 'Forgot password?'}
         </button>
 
-        {error ? <p className="text-sm text-red-300">{error}</p> : null}
-      </div>
-      <p className="mt-4 text-center text-[14px] text-riotTextSecondary">
-        Don't have an account? <Link to="/signup" className="text-riotAccent">Get Started</Link>
-      </p>
+        {error ? <p className="rounded-[14px] bg-red-50 px-4 py-3 text-[14px] font-medium text-red-700">{error}</p> : null}
+        {notice ? <p role="status" className="rounded-[14px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-[14px] font-medium leading-5 text-emerald-800">{notice}</p> : null}
+        <p className="pt-2 text-center text-[14px] text-riotTextSecondary">
+          Don't have an account? <Link to="/signup/client" className="font-semibold text-riotAccent hover:underline">Get started</Link>
+        </p>
+        </div>
       </div>
     </section>
   );

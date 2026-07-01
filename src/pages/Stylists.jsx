@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Sparkles, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import TagPill from '../components/TagPill';
 
 const featuredStylists = [
@@ -111,6 +112,12 @@ export default function Stylists() {
         <p className="mt-3 text-[15px] leading-relaxed text-riotTextSecondary">
           Preview the first stylists we&apos;re onboarding in SF, NYC, and Chicago.
         </p>
+        <Link
+          to="/apply"
+          className="mt-5 inline-flex rounded-md bg-riotAccent px-5 py-3 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover"
+        >
+          Apply as a Stylist
+        </Link>
       </div>
 
       <div className="mt-7 flex flex-col gap-3 rounded-xl border border-riotBorder bg-white p-4 shadow-riot">

@@ -291,7 +291,7 @@ function WaitlistModal({
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">Founding members</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">Early access</p>
             <h2 id={titleId} className="mt-2 text-[28px] font-bold tracking-[-0.02em] text-[#161616]">
               {isStylist ? 'Apply as a stylist' : 'Get early access'}
             </h2>
@@ -679,7 +679,7 @@ export default function Home() {
               </div>
 
               <p className="mt-4 text-[13px] font-medium text-[#91a9bf]">
-                Founding members get first access when Rack Riot launches in your city.
+                Get matched with styling help built around your city, schedule, and shopping goals.
               </p>
 
               <button
@@ -706,7 +706,7 @@ export default function Home() {
       <section className="bg-[#0D1B2A] px-6 pb-12 pt-10 text-white md:px-8 md:pb-14 md:pt-12 lg:px-12">
         <div id="how-it-works" className="mx-auto w-full max-w-[1100px]">
           <div className="mb-8 max-w-[660px]">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">How Rack Riot will work</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#ff4d4d]">How Rack Riot works</p>
             <h2 className="mt-3 text-[32px] font-bold tracking-[-0.02em] text-white md:text-[42px]">
               Simple, human styling — built around your schedule.
             </h2>
@@ -743,7 +743,7 @@ export default function Home() {
               ))}
             </div>
             <p className="mt-5 text-center text-[14px] leading-6 text-[#7B9BB5]">
-              Founding members get first access when Rack Riot launches in your city.
+              Real styling help for solo sessions, groups, and city-by-city shopping plans.
             </p>
           </div>
         </div>

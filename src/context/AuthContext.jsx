@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { resolveAccountRole } from '../lib/accountRole';
 import { hasSupabaseEnv, supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
@@ -27,15 +28,23 @@ export const AuthProvider = ({ children }) => {
     const fallbackName = fallback?.full_name || 'Rack Riot User';
 
     try {
-      const { data, error } = await supabase.from('users').select('*').eq('id', userId).maybeSingle();
+      const [{ data, error }, resolvedRole] = await Promise.all([
+        supabase.from('users').select('*').eq('id', userId).maybeSingle(),
+        resolveAccountRole({
+          id: userId,
+          user_metadata: { role: fallbackRole }
+        })
+      ]);
       if (error) throw error;
       setProfile(
-        data || {
-          id: userId,
-          role: fallbackRole,
-          email: fallbackEmail,
-          full_name: fallbackName
-        }
+        data
+          ? { ...data, role: resolvedRole }
+          : {
+              id: userId,
+              role: resolvedRole,
+              email: fallbackEmail,
+              full_name: fallbackName
+            }
       );
       return true;
     } catch {

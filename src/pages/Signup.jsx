@@ -9,10 +9,10 @@ const cards = [
   },
   {
     title: 'I want to be a stylist',
-    description: 'Join our founding stylist network and start earning doing what you love',
+    description: 'Apply to join our curated stylist network and grow your client base',
     cta: 'Apply as a Stylist',
     to: '/apply',
-    footnote: 'Be one of the first stylists in your city'
+    footnote: 'Build a professional profile and connect with matched clients'
   }
 ];
 

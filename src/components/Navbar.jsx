@@ -5,9 +5,9 @@ import { useAuth } from '../context/AuthContext';
 
 function Wordmark() {
   return (
-    <span className="flex items-baseline gap-2">
-      <span className="font-editorial text-[29px] font-semibold leading-none tracking-[-0.045em]">Rack Riot</span>
-      <span className="h-2 w-2 rounded-full bg-atelier-rust" />
+    <span className="flex -rotate-1 items-center gap-1">
+      <span className="font-playful text-[31px] font-extrabold leading-none tracking-[-0.04em]">Rack</span>
+      <span className="rounded-full bg-play-coral px-2 py-0.5 font-playful text-[21px] font-extrabold leading-none text-white">Riot</span>
     </span>
   );
 }
@@ -28,17 +28,17 @@ export default function Navbar() {
   const dashboardLabel = role === 'admin' ? 'Admin' : 'My dashboard';
 
   return (
-    <header className="sticky top-0 z-50 border-b border-atelier-ink/15 bg-atelier-paper/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b-2 border-play-plum bg-play-cream/95 backdrop-blur-xl">
       <nav className="mx-auto flex h-[76px] w-full max-w-[1480px] items-center justify-between px-6 sm:px-10 lg:px-14 xl:px-20">
         <Link to="/" onClick={() => setMenuOpen(false)} className="relative z-50 text-atelier-ink" aria-label="Rack Riot home">
           <Wordmark />
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
-          <a href="/#the-process" className="text-[11px] font-bold uppercase tracking-[0.14em] text-atelier-muted transition hover:text-atelier-rust">
+          <a href="/#the-process" className="text-[12px] font-black text-play-plum/70 transition hover:-rotate-2 hover:text-play-coral">
             How it works
           </a>
-          <Link to="/stylists" className="text-[11px] font-bold uppercase tracking-[0.14em] text-atelier-muted transition hover:text-atelier-rust">
+          <Link to="/stylists" className="text-[12px] font-black text-play-plum/70 transition hover:rotate-2 hover:text-play-coral">
             For stylists
           </Link>
 
@@ -48,19 +48,19 @@ export default function Navbar() {
             </span>
           ) : user && role ? (
             <>
-              <NavLink to={dashboardPath} className="border-b border-atelier-ink pb-1 text-[11px] font-bold uppercase tracking-[0.14em]">
+              <NavLink to={dashboardPath} className="rounded-full bg-play-butter px-4 py-2 text-[12px] font-black">
                 {dashboardLabel}
               </NavLink>
-              <button onClick={handleLogout} className="text-[11px] font-bold uppercase tracking-[0.14em] text-atelier-muted transition hover:text-atelier-rust">
+              <button onClick={handleLogout} className="text-[12px] font-black text-play-plum/60 transition hover:text-play-coral">
                 Log out
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-[11px] font-bold uppercase tracking-[0.14em] text-atelier-muted transition hover:text-atelier-rust">
+              <Link to="/login" className="text-[12px] font-black text-play-plum/70 transition hover:text-play-coral">
                 Log in
               </Link>
-              <Link to="/signup/client" className="atelier-button min-h-[44px] bg-atelier-ink px-5 text-atelier-paper hover:border-atelier-rust hover:bg-atelier-rust">
+              <Link to="/signup/client" className="play-button play-button-primary min-h-[46px] px-5">
                 Find a stylist
                 <ArrowRight size={15} />
               </Link>
@@ -70,7 +70,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="relative z-50 flex h-11 w-11 items-center justify-center border border-atelier-ink/20 md:hidden"
+          className="relative z-50 flex h-11 w-11 items-center justify-center rounded-full border-2 border-play-plum bg-play-butter md:hidden"
           onClick={() => setMenuOpen((current) => !current)}
           aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
           aria-expanded={menuOpen}
@@ -80,29 +80,29 @@ export default function Navbar() {
       </nav>
 
       {menuOpen ? (
-        <div className="absolute inset-x-0 top-[76px] border-b border-atelier-ink/20 bg-atelier-paper p-6 shadow-[0_28px_60px_rgba(23,33,25,0.14)] md:hidden">
+        <div className="absolute inset-x-0 top-[76px] border-b-2 border-play-plum bg-play-cream p-6 shadow-[0_12px_0_rgba(77,44,94,0.12)] md:hidden">
           <div className="flex flex-col">
-            <a href="/#the-process" onClick={() => setMenuOpen(false)} className="border-b border-atelier-ink/15 py-4 font-editorial text-[28px]">
+            <a href="/#the-process" onClick={() => setMenuOpen(false)} className="border-b-2 border-play-plum/10 py-4 font-playful text-[28px] font-extrabold">
               How it works
             </a>
-            <Link to="/stylists" onClick={() => setMenuOpen(false)} className="border-b border-atelier-ink/15 py-4 font-editorial text-[28px]">
+            <Link to="/stylists" onClick={() => setMenuOpen(false)} className="border-b-2 border-play-plum/10 py-4 font-playful text-[28px] font-extrabold">
               For stylists
             </Link>
             {user && role ? (
               <>
-                <Link to={dashboardPath} onClick={() => setMenuOpen(false)} className="border-b border-atelier-ink/15 py-4 font-editorial text-[28px]">
+                <Link to={dashboardPath} onClick={() => setMenuOpen(false)} className="border-b-2 border-play-plum/10 py-4 font-playful text-[28px] font-extrabold">
                   {dashboardLabel}
                 </Link>
-                <button onClick={handleLogout} className="py-4 text-left font-editorial text-[28px] text-atelier-rust">
+                <button onClick={handleLogout} className="py-4 text-left font-playful text-[28px] font-extrabold text-play-coral">
                   Log out
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)} className="border-b border-atelier-ink/15 py-4 font-editorial text-[28px]">
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="border-b-2 border-play-plum/10 py-4 font-playful text-[28px] font-extrabold">
                   Log in
                 </Link>
-                <Link to="/signup/client" onClick={() => setMenuOpen(false)} className="atelier-button atelier-button-primary mt-6">
+                <Link to="/signup/client" onClick={() => setMenuOpen(false)} className="play-button play-button-primary mt-6">
                   Find a stylist
                   <ArrowRight size={17} />
                 </Link>

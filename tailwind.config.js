@@ -4,38 +4,47 @@ export default {
   theme: {
     extend: {
       colors: {
-        riotBg: '#F3F0E8',
-        riotBgSecondary: '#EAE5DA',
-        riotCard: '#FBF9F3',
-        riotBorder: '#D8D1C3',
-        riotBorderDark: '#B8AE9E',
-        riotText: '#172119',
-        riotTextSecondary: '#5F685F',
-        riotTextMuted: '#858C83',
-        riotAccent: '#C4482D',
-        riotAccentHover: '#9E351F',
-        riotSuccess: '#397A4B',
-        riotWarning: '#A66620',
-        riotError: '#B8362E',
+        riotBg: '#FFF8E7',
+        riotBgSecondary: '#FFF0CB',
+        riotCard: '#FFFFFF',
+        riotBorder: '#D9CCE0',
+        riotBorderDark: '#A991B5',
+        riotText: '#4D2C5E',
+        riotTextSecondary: '#725F7C',
+        riotTextMuted: '#9A88A3',
+        riotAccent: '#FF6B6B',
+        riotAccentHover: '#EF525B',
+        riotSuccess: '#31896B',
+        riotWarning: '#B37700',
+        riotError: '#C53D52',
         atelier: {
-          paper: '#F3F0E8',
-          ink: '#172119',
-          forest: '#16231B',
-          citrus: '#D7FF57',
-          rust: '#C4482D',
-          clay: '#E5D6C5',
-          muted: '#5F685F'
+          paper: '#FFF8E7',
+          ink: '#4D2C5E',
+          forest: '#4D2C5E',
+          citrus: '#FFD95A',
+          rust: '#FF6B6B',
+          clay: '#A8E6CF',
+          muted: '#725F7C'
+        },
+        play: {
+          cream: '#FFF8E7',
+          plum: '#4D2C5E',
+          coral: '#FF6B6B',
+          sky: '#83D8F5',
+          butter: '#FFD95A',
+          mint: '#A8E6CF'
         }
       },
       fontFamily: {
-        display: ['Fraunces', 'Georgia', 'serif'],
-        editorial: ['Fraunces', 'Georgia', 'serif'],
-        body: ['Manrope', 'sans-serif'],
-        logo: ['Manrope', 'sans-serif'],
-        mono: ['IBM Plex Mono', 'monospace']
+        display: ['Baloo 2', 'sans-serif'],
+        editorial: ['Baloo 2', 'sans-serif'],
+        playful: ['Baloo 2', 'sans-serif'],
+        body: ['Nunito Sans', 'sans-serif'],
+        logo: ['Baloo 2', 'sans-serif'],
+        mono: ['Nunito Sans', 'sans-serif']
       },
       boxShadow: {
-        riot: '0 18px 50px rgba(23, 33, 25, 0.08)'
+        riot: '0 14px 0 rgba(77, 44, 94, 0.08)'
       }
     }
   },

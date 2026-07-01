@@ -1,6 +1,6 @@
 import { ArrowRight, CalendarDays, Check, CircleDollarSign, UserRoundCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import heroShoppingImage from '../assets/vitaly-gariev-AixitSFNrBc-unsplash.jpg';
+import heroShoppingImage from '../assets/rackriot-shopping-illustration.jpg';
 
 const benefits = [
   {

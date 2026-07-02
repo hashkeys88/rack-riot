@@ -255,6 +255,89 @@ textarea::placeholder {
   }
 }
 
+.genz-grid {
+  background-image:
+    linear-gradient(rgba(18, 18, 18, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 18, 18, 0.055) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.genz-button {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 2px solid #121212;
+  padding: 0 26px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.genz-button:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 6px 6px 0 #121212;
+}
+
+.genz-reveal {
+  animation: genz-reveal 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.genz-delay-1 { animation-delay: 80ms; }
+.genz-delay-2 { animation-delay: 160ms; }
+.genz-delay-3 { animation-delay: 240ms; }
+.genz-delay-4 { animation-delay: 320ms; }
+.genz-delay-5 { animation-delay: 400ms; }
+.genz-delay-6 { animation-delay: 480ms; }
+
+.genz-float {
+  animation: genz-float 4s ease-in-out infinite;
+}
+
+.genz-step {
+  transition: transform 240ms ease, box-shadow 240ms ease;
+}
+
+.genz-step:hover {
+  transform: translateY(-8px) rotate(-1deg);
+  box-shadow: 8px 8px 0 #121212;
+}
+
+.genz-orbit {
+  animation: genz-orbit 9s linear infinite;
+}
+
+.genz-orbit-reverse {
+  animation: genz-orbit-reverse 7s linear infinite;
+}
+
+@keyframes genz-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(32px) rotate(1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+@keyframes genz-float {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+@keyframes genz-orbit {
+  to { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+
+@keyframes genz-orbit-reverse {
+  to { transform: rotate(-360deg) translateX(16px) rotate(360deg); }
+}
+
 main > * {
   animation: page-enter 420ms ease both;
 }

@@ -11,7 +11,7 @@ import AuthCallback from './pages/AuthCallback';
 import Book from './pages/Book';
 import Buddies from './pages/Buddies';
 import Dashboard from './pages/Dashboard';
-import Home from './pages/HomeWhimsical';
+import Home from './pages/HomeGenZ';
 import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import Signup from './pages/Signup';

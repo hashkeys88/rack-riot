@@ -258,6 +258,10 @@ alter table stylists add column if not exists session_types text[];
 alter table stylists add column if not exists rate_expectation text;
 alter table stylists add column if not exists neighborhood text;
 alter table stylists add column if not exists availability text;
+alter table stylists add column if not exists hourly_rate_cents integer check (hourly_rate_cents is null or hourly_rate_cents > 0);
+alter table stylists add column if not exists minimum_session_minutes integer not null default 60 check (minimum_session_minutes in (60, 90, 120, 180));
+alter table stylists add column if not exists group_rate_cents integer check (group_rate_cents is null or group_rate_cents > 0);
+alter table stylists add column if not exists contact_for_pricing boolean not null default false;
 
 alter table sessions enable row level security;
 alter table users enable row level security;

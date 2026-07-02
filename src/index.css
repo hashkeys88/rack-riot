@@ -306,6 +306,17 @@ textarea::placeholder {
   box-shadow: 8px 8px 0 #121212;
 }
 
+.genz-occasion {
+  animation: genz-card-drift 5s ease-in-out infinite alternate;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.genz-occasion:hover {
+  animation-play-state: paused;
+  transform: translateY(-9px) rotate(0);
+  box-shadow: 10px 10px 0 #121212;
+}
+
 .genz-orbit {
   animation: genz-orbit 9s linear infinite;
 }
@@ -336,6 +347,11 @@ textarea::placeholder {
 
 @keyframes genz-orbit-reverse {
   to { transform: rotate(-360deg) translateX(16px) rotate(360deg); }
+}
+
+@keyframes genz-card-drift {
+  from { translate: 0 0; }
+  to { translate: 0 -8px; }
 }
 
 main > * {

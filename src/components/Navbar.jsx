@@ -34,7 +34,7 @@ export default function Navbar() {
           <Wordmark />
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="hidden items-center gap-8 lg:flex">
           <a href="/#the-process" className="text-[12px] font-black text-play-plum/70 transition hover:-rotate-2 hover:text-play-coral">
             How it works
           </a>
@@ -70,7 +70,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="relative z-50 flex h-11 w-11 items-center justify-center rounded-full border-2 border-play-plum bg-play-butter md:hidden"
+          className="relative z-50 flex h-11 w-11 items-center justify-center rounded-full border-2 border-play-plum bg-play-butter lg:hidden"
           onClick={() => setMenuOpen((current) => !current)}
           aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
           aria-expanded={menuOpen}
@@ -80,7 +80,7 @@ export default function Navbar() {
       </nav>
 
       {menuOpen ? (
-        <div className="absolute inset-x-0 top-[76px] border-b-2 border-play-plum bg-play-cream p-6 shadow-[0_12px_0_rgba(77,44,94,0.12)] md:hidden">
+        <div className="absolute inset-x-0 top-[76px] border-b-2 border-play-plum bg-play-cream p-6 shadow-[0_12px_0_rgba(77,44,94,0.12)] lg:hidden">
           <div className="flex flex-col">
             <a href="/#the-process" onClick={() => setMenuOpen(false)} className="border-b-2 border-play-plum/10 py-4 font-playful text-[28px] font-extrabold">
               How it works

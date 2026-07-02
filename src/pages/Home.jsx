@@ -655,7 +655,7 @@ export default function Home() {
               </h1>
 
               <p className="mt-5 max-w-[520px] text-[18px] leading-relaxed text-[#7B9BB5]">
-                Skip the algorithm. Book real styling help at any store, in person.
+                A personal stylist meets you at the stores you already love, helps you see what works, and makes shopping feel clear again.
               </p>
 
               <div className="mt-8 flex flex-wrap items-start gap-3">

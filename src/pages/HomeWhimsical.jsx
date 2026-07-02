@@ -92,9 +92,6 @@ export default function HomeWhimsical() {
             <div className="absolute inset-[0_4%_6%_0] -rotate-1 overflow-hidden rounded-[28%_38%_24%_32%/32%_24%_36%_28%] border-[3px] border-play-plum bg-white shadow-[12px_14px_0_#FFD95A]">
               <img src={friendsShoppingImage} alt="Adults of different ages enjoying a styling session together" className="h-full w-full object-cover" fetchPriority="high" />
             </div>
-            <div className="all-ages-float absolute -left-1 top-[13%] -rotate-3 rounded-full border-2 border-play-plum bg-play-coral px-5 py-3 font-playful text-[18px] font-extrabold text-white shadow-[4px_4px_0_#4D2C5E] sm:left-0 sm:text-[22px]">
-              style has no age limit
-            </div>
             <div className="absolute bottom-[3%] right-[1%] rotate-3 rounded-[22px] border-2 border-play-plum bg-play-cream p-4 shadow-[5px_5px_0_#4D2C5E] sm:p-5">
               <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em] text-play-coral">
                 <MapPin size={15} />

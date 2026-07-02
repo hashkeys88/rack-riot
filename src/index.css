@@ -255,10 +255,6 @@ textarea::placeholder {
   }
 }
 
-.all-ages-float {
-  animation: all-ages-float 4.5s ease-in-out infinite;
-}
-
 .all-ages-card {
   animation: all-ages-breathe 5.5s ease-in-out infinite alternate;
   transition: transform 240ms ease, box-shadow 240ms ease;
@@ -268,11 +264,6 @@ textarea::placeholder {
   animation-play-state: paused;
   transform: translateY(-7px);
   box-shadow: 9px 10px 0 #4d2c5e;
-}
-
-@keyframes all-ages-float {
-  0%, 100% { transform: translateY(0) rotate(-3deg); }
-  50% { transform: translateY(-9px) rotate(1deg); }
 }
 
 @keyframes all-ages-breathe {

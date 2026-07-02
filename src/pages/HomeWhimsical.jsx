@@ -52,7 +52,7 @@ export default function HomeWhimsical() {
             </h1>
 
             <p className="mt-8 max-w-[600px] text-[18px] font-semibold leading-8 text-play-plum/70 sm:text-[20px]">
-              Meet a friendly local stylist at your favorite stores. Get honest help, try something unexpected, and actually enjoy the fitting room.
+              A personal stylist meets you at the stores you already love, helps you see what works, and makes shopping feel clear again.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">

@@ -28,7 +28,7 @@ export default function HomeGenZ() {
                 <span className="genz-reveal genz-delay-4 block">Your person.</span>
               </h1>
               <p className="genz-reveal genz-delay-5 mt-8 max-w-[570px] text-[17px] font-bold leading-7 sm:text-[20px]">
-                A local stylist who shops with you, hypes you honestly, and knows when the trousers are not it.
+                A personal stylist meets you at the stores you already love, helps you see what works, and makes shopping feel clear again.
               </p>
             </div>
 

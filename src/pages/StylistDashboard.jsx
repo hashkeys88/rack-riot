@@ -35,18 +35,11 @@ export default function StylistDashboard() {
   const [bookings, setBookings] = useState([]);
   const [usersRow, setUsersRow] = useState(null);
   const [stylistsRow, setStylistsRow] = useState(null);
-  const [pricingSaved, setPricingSaved] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     city: '',
     bio: '',
     specialtyTags: []
-  });
-  const [pricing, setPricing] = useState({
-    hourlyRate: '',
-    minimumMinutes: '60',
-    groupRate: '',
-    contactForPricing: false
   });
 
   const completedCount = useMemo(() => bookings.filter((item) => item.status === 'completed').length, [bookings]);
@@ -90,12 +83,6 @@ export default function StylistDashboard() {
           city: userRes.data?.city || '',
           bio: stylistRes.data?.bio || '',
           specialtyTags: stylistRes.data?.specialty_tags || []
-        });
-        setPricing({
-          hourlyRate: stylistRes.data?.hourly_rate_cents ? String(stylistRes.data.hourly_rate_cents / 100) : '',
-          minimumMinutes: String(stylistRes.data?.minimum_session_minutes || 60),
-          groupRate: stylistRes.data?.group_rate_cents ? String(stylistRes.data.group_rate_cents / 100) : '',
-          contactForPricing: Boolean(stylistRes.data?.contact_for_pricing)
         });
       } catch {
         if (!mounted) return;
@@ -259,44 +246,6 @@ export default function StylistDashboard() {
     }
   }
 
-  async function savePricing() {
-    if (!user?.id) return;
-    const hourlyRate = Number(pricing.hourlyRate);
-    const groupRate = pricing.groupRate ? Number(pricing.groupRate) : null;
-    if (!pricing.contactForPricing && (!Number.isFinite(hourlyRate) || hourlyRate < 1)) {
-      setError('Enter an hourly rate or choose contact for pricing.');
-      return;
-    }
-    if (groupRate !== null && (!Number.isFinite(groupRate) || groupRate < 1)) {
-      setError('Group rate must be at least $1.');
-      return;
-    }
-
-    setSaving(true);
-    setError('');
-    setPricingSaved(false);
-    const updates = {
-      hourly_rate_cents: pricing.contactForPricing ? null : Math.round(hourlyRate * 100),
-      minimum_session_minutes: Number(pricing.minimumMinutes),
-      group_rate_cents: groupRate === null ? null : Math.round(groupRate * 100),
-      contact_for_pricing: pricing.contactForPricing
-    };
-
-    try {
-      const { error: updateError } = await supabase.from('stylists').update(updates).eq('id', user.id);
-      if (updateError) throw updateError;
-      setStylistsRow((prev) => ({ ...(prev || {}), ...updates }));
-      setPricingSaved(true);
-      toast.success('Pricing saved');
-      window.setTimeout(() => setPricingSaved(false), 3000);
-    } catch {
-      setError('Could not save pricing. Please try again.');
-      toast.error('Could not save pricing');
-    } finally {
-      setSaving(false);
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
@@ -324,7 +273,6 @@ export default function StylistDashboard() {
         <button onClick={() => setActiveTab('bookings')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'bookings' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Bookings</button>
         <button onClick={() => setActiveTab('profile')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'profile' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>My Profile</button>
         <button onClick={() => setActiveTab('availability')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'availability' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Availability</button>
-        <button onClick={() => setActiveTab('pricing')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'pricing' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Pricing</button>
         <button onClick={() => setActiveTab('earnings')} className={`px-0 py-3 text-[14px] font-medium ${activeTab === 'earnings' ? 'border-b-2 border-riotText text-riotText' : 'text-riotTextSecondary hover:text-riotText'}`}>Earnings</button>
       </div>
 
@@ -526,87 +474,6 @@ export default function StylistDashboard() {
             </div>
           </div>
           <p className="mt-4 rounded-md border border-riotAccent/30 bg-riotAccent/10 px-4 py-3 text-sm text-riotText/90">Payouts coming soon</p>
-        </article>
-      ) : null}
-
-      {activeTab === 'pricing' ? (
-        <article className="riot-card mt-6">
-          <div className="max-w-2xl">
-            <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Session pricing</p>
-            <h2 className="mt-2 text-[28px] font-bold tracking-[-0.03em]">Set rates that work for you</h2>
-            <p className="mt-2 text-[14px] leading-6 text-riotTextSecondary">
-              Clients will see these rates on your profile after approval. You can update them whenever your services change.
-            </p>
-
-            <label className="mt-7 flex items-center justify-between gap-4 rounded-[18px] border border-riotBorder bg-white p-4">
-              <span>
-                <span className="block text-[14px] font-bold">Contact for pricing</span>
-                <span className="mt-1 block text-[13px] text-riotTextSecondary">Hide fixed rates and invite clients to ask.</span>
-              </span>
-              <input
-                type="checkbox"
-                checked={pricing.contactForPricing}
-                onChange={(event) => setPricing((prev) => ({ ...prev, contactForPricing: event.target.checked }))}
-                className="h-5 w-5"
-              />
-            </label>
-
-            <div className="mt-5 grid gap-5 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-[13px] font-bold">Hourly rate</span>
-                <span className="relative mt-2 block">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold">$</span>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={pricing.hourlyRate}
-                    disabled={pricing.contactForPricing}
-                    onChange={(event) => setPricing((prev) => ({ ...prev, hourlyRate: event.target.value }))}
-                    placeholder="75"
-                    className="h-12 w-full rounded-xl border border-riotBorder bg-white pl-8 pr-4 disabled:opacity-50"
-                  />
-                </span>
-              </label>
-              <label className="block">
-                <span className="text-[13px] font-bold">Minimum session</span>
-                <select
-                  value={pricing.minimumMinutes}
-                  onChange={(event) => setPricing((prev) => ({ ...prev, minimumMinutes: event.target.value }))}
-                  className="mt-2 h-12 w-full rounded-xl border border-riotBorder bg-white px-4"
-                >
-                  <option value="60">1 hour</option>
-                  <option value="90">1.5 hours</option>
-                  <option value="120">2 hours</option>
-                  <option value="180">3 hours</option>
-                </select>
-              </label>
-              <label className="block sm:col-span-2">
-                <span className="text-[13px] font-bold">Group-session rate <span className="font-normal text-riotTextSecondary">(optional, per hour)</span></span>
-                <span className="relative mt-2 block">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold">$</span>
-                  <input
-                    type="number"
-                    min="1"
-                    step="1"
-                    value={pricing.groupRate}
-                    onChange={(event) => setPricing((prev) => ({ ...prev, groupRate: event.target.value }))}
-                    placeholder="120"
-                    className="h-12 w-full rounded-xl border border-riotBorder bg-white pl-8 pr-4"
-                  />
-                </span>
-              </label>
-            </div>
-
-            {error ? <p className="mt-4 text-sm text-red-500">{error}</p> : null}
-            <button
-              onClick={savePricing}
-              disabled={saving}
-              className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-riotAccent px-6 text-[14px] font-bold text-white disabled:opacity-60"
-            >
-              {saving ? 'Saving...' : pricingSaved ? 'Pricing saved' : 'Save pricing'}
-            </button>
-          </div>
         </article>
       ) : null}
     </section>

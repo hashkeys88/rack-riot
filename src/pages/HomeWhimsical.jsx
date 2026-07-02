@@ -61,7 +61,7 @@ export default function HomeWhimsical() {
             </h1>
 
             <p className="mt-8 max-w-[600px] text-[18px] font-semibold leading-8 text-play-plum/70 sm:text-[20px]">
-              From office days and weddings to holidays, interviews, and wardrobe changes, a local stylist helps you dress for the life you are living now.
+              A personal stylist meets you at the stores you already love, helps you see what works, and makes shopping feel clear again.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">

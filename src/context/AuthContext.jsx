@@ -142,18 +142,14 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      clearSupabaseStoredAuth();
-      setUser(null);
-      setSession(null);
-      setProfile(null);
-      window.location.href = '/';
-    }
+  const logout = () => {
+    const signOutRequest = supabase.auth.signOut({ scope: 'local' });
+    clearSupabaseStoredAuth();
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+    window.location.replace('/');
+    signOutRequest.catch((error) => console.error('Background sign out failed:', error));
   };
 
   return (

@@ -9,7 +9,7 @@ export default function AuthCallback() {
     return (
       <section className="flex min-h-[calc(100vh-72px)] items-center justify-center bg-[#f7f7f7] px-6">
         <div className="text-center">
-          <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Email confirmed</p>
+          <p className="text-[12px] font-bold uppercase tracking-[0.18em] text-riotAccent">Signing you in</p>
           <h1 className="mt-3 text-[28px] font-extrabold tracking-[-0.03em] text-riotText">
             Opening your dashboard...
           </h1>

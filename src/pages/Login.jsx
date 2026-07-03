@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { dashboardPathForRole, resolveAccountRole } from '../lib/accountRole';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 
 export default function Login() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -106,7 +107,14 @@ export default function Login() {
             <h1 className="mt-4 text-[46px] font-semibold leading-none tracking-[-0.04em] text-atelier-ink">Log in</h1>
             <p className="mt-4 text-[15px] leading-7 text-atelier-muted">Use the email and password connected to your Rack Riot account.</p>
 
-            <div className="mt-9 space-y-5">
+            <GoogleAuthButton onError={setError} />
+            <div className="my-6 flex items-center gap-4" aria-hidden="true">
+              <span className="h-px flex-1 bg-atelier-ink/15" />
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-atelier-muted">or use email</span>
+              <span className="h-px flex-1 bg-atelier-ink/15" />
+            </div>
+
+            <div className="space-y-5">
               <label htmlFor="login-email" className="block">
                 <span className="mb-2 block text-[12px] font-bold uppercase tracking-[0.1em] text-atelier-muted">Email</span>
                 <input

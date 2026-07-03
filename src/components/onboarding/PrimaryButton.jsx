@@ -1,3 +1,5 @@
+import { Button } from '@astryxdesign/core/Button';
+
 export default function PrimaryButton({
   children,
   disabled = false,
@@ -6,13 +8,16 @@ export default function PrimaryButton({
   className = ''
 }) {
   return (
-    <button
+    <Button
       type={type}
-      disabled={disabled}
+      label={typeof children === 'string' ? children : 'Continue'}
+      variant="primary"
+      size="lg"
+      isDisabled={disabled}
       onClick={onClick}
-      className={`atelier-button atelier-button-primary disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={className}
     >
       {children}
-    </button>
+    </Button>
   );
 }

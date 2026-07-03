@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarDays, CheckCircle2, Clock3, MapPin, UserRound, WalletCards } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { Tab, TabList } from '@astryxdesign/core/TabList';
 import TagPill from '../components/TagPill';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -269,12 +270,14 @@ export default function StylistDashboard() {
         </div>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap gap-x-7 gap-y-2 border-y border-atelier-ink/15 bg-transparent px-0">
-        <button onClick={() => setActiveTab('overview')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'overview' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Overview</button>
-        <button onClick={() => setActiveTab('bookings')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'bookings' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Bookings</button>
-        <button onClick={() => setActiveTab('profile')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'profile' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>My Profile</button>
-        <button onClick={() => setActiveTab('availability')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'availability' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Availability</button>
-        <button onClick={() => setActiveTab('earnings')} className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] ${activeTab === 'earnings' ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}>Earnings</button>
+      <div className="mt-10">
+        <TabList value={activeTab} onChange={setActiveTab} size="lg" hasDivider>
+          <Tab value="overview" label="Overview" />
+          <Tab value="bookings" label="Bookings" />
+          <Tab value="profile" label="My Profile" />
+          <Tab value="availability" label="Availability" />
+          <Tab value="earnings" label="Earnings" />
+        </TabList>
       </div>
 
       {activeTab === 'overview' ? (

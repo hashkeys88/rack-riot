@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { supabase } from '../lib/supabase';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { Text } from '@astryxdesign/core/Text';
+import { TextInput } from '@astryxdesign/core/TextInput';
 
 const cities = ['San Francisco', 'New York', 'Los Angeles', 'Chicago', 'Austin', 'Other'];
 
@@ -65,22 +69,23 @@ export default function Buddies() {
   return (
     <section className="min-h-[calc(100vh-60px)] bg-riotBgSecondary px-6 py-12">
       <div className="mx-auto max-w-3xl">
-      <h1 className="text-[32px] font-bold">Find your shopping crew</h1>
-      <p className="mt-3 text-[14px] text-riotTextSecondary">We're building your city's style community. Be the first to know when buddy matching launches.</p>
+      <Text type="display-2" as="h1">Find your shopping crew</Text>
+      <Text type="large" as="p" color="secondary">We're building your city's style community. Be the first to know when buddy matching launches.</Text>
 
-      <div className="mt-8 space-y-4 rounded-xl border border-riotBorder bg-white p-6 shadow-riot">
+      <div className="mt-8"><Card padding={6}>
         {successCity ? (
           <p className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
             You're on the list! We'll reach out when we launch in {successCity}
           </p>
         ) : null}
 
-        <input
+        <TextInput
           type="email"
           placeholder="Email"
+          label="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2"
+          onChange={setEmail}
+          size="lg"
         />
 
         <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2">
@@ -91,12 +96,10 @@ export default function Buddies() {
           ))}
         </select>
 
-        <button onClick={handleJoinWaitlist} disabled={loading} className="w-full rounded-md bg-riotAccent px-4 py-3 text-[14px] font-semibold text-white transition hover:bg-riotAccentHover disabled:opacity-60">
-          {loading ? 'Joining...' : 'Join Waitlist'}
-        </button>
+        <Button label="Join waitlist" variant="primary" size="lg" isLoading={loading} onClick={handleJoinWaitlist} />
 
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
-      </div>
+      </Card></div>
       </div>
     </section>
   );

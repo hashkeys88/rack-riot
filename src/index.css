@@ -36,6 +36,56 @@
   font-family: 'Nunito Sans', sans-serif;
 }
 
+.rack-astryx-shell .astryx-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.rack-astryx-shell .astryx-button:hover {
+  transform: translateY(-1px);
+}
+
+.rack-astryx-shell .astryx-button.primary {
+  border: 1px solid #e84e3d;
+  background: #e84e3d;
+  color: #fff;
+}
+
+.rack-astryx-shell .astryx-button.secondary {
+  border: 1px solid #14231e;
+  background: var(--color-background-surface);
+  color: #14231e;
+}
+
+.rack-astryx-shell .astryx-button.ghost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.rack-astryx-shell .astryx-button:disabled,
+.rack-astryx-shell .astryx-button[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rack-astryx-shell .astryx-tab-list {
+  border-bottom-color: var(--color-border);
+}
+
+.rack-astryx-shell .astryx-tab[data-selected='true'] {
+  color: #e84e3d;
+}
+
+.rack-astryx-shell .astryx-selectable-card {
+  border-radius: var(--radius-container);
+}
+
 .astryx-home {
   overflow: hidden;
   background: var(--color-background-body);
@@ -281,6 +331,345 @@
     color: var(--color-text-primary);
     font-size: 12px;
     font-weight: 700;
+  }
+}
+
+.astryx-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--color-border-emphasized);
+  background: color-mix(in srgb, var(--color-background-body) 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.astryx-navbar > nav {
+  display: flex;
+  width: 100%;
+  max-width: 1480px;
+  height: 76px;
+  margin: 0 auto;
+  padding: 0 6vw;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.astryx-wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  color: #14231e;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.astryx-wordmark span:last-child {
+  color: #e84e3d;
+}
+
+.astryx-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 28px;
+}
+
+.astryx-desktop-nav > a,
+.astryx-dashboard-link {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.astryx-desktop-nav > a:hover,
+.astryx-dashboard-link:hover {
+  color: var(--color-text-primary);
+}
+
+.astryx-nav-status {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.astryx-menu-button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid var(--color-border-emphasized);
+  border-radius: 999px;
+  background: var(--color-background-surface);
+}
+
+.astryx-mobile-nav {
+  position: absolute;
+  inset: 76px 0 auto;
+  border-bottom: 1px solid var(--color-border-emphasized);
+  background: var(--color-background-surface);
+  padding: 20px 6vw 28px;
+  box-shadow: var(--shadow-high);
+}
+
+.astryx-mobile-link {
+  display: block;
+  border-bottom: 1px solid var(--color-border);
+  padding: 18px 0;
+  color: var(--color-text-primary);
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.astryx-mobile-cta {
+  display: flex;
+  min-height: 52px;
+  margin-top: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 999px;
+  background: #e84e3d;
+  color: white;
+  font-weight: 700;
+}
+
+.astryx-footer {
+  border-top: 1px solid var(--color-border-emphasized);
+  background: #feee7b;
+  color: #14231e;
+  padding: 64px 6vw 28px;
+}
+
+.astryx-footer-main {
+  display: grid;
+  max-width: 1320px;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+.astryx-footer-main > div:first-child p:first-child {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.astryx-footer-main > div:first-child p:first-child span {
+  color: #e84e3d;
+}
+
+.astryx-footer-main > div:first-child p:last-child {
+  max-width: 460px;
+  margin-top: 14px;
+  line-height: 1.7;
+}
+
+.astryx-footer-main > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  align-items: center;
+}
+
+.astryx-footer-main a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #14231e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.astryx-footer-meta {
+  display: flex;
+  max-width: 1320px;
+  margin: 44px auto 0;
+  padding-top: 20px;
+  flex-direction: column;
+  gap: 7px;
+  border-top: 1px solid rgba(20,35,30,0.28);
+  color: rgba(20,35,30,0.6);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.astryx-onboarding {
+  display: grid;
+  min-height: calc(100vh - 76px);
+  place-items: start center;
+  background:
+    radial-gradient(circle at 12% 15%, rgba(254,238,123,0.55), transparent 28%),
+    var(--color-background-body);
+  padding: 48px 20px 80px;
+}
+
+.astryx-onboarding > .astryx-card {
+  border-color: var(--color-border-emphasized);
+  box-shadow: 0 24px 80px rgba(20,35,30,0.08);
+}
+
+.astryx-onboarding .astryx-heading {
+  margin-top: 12px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(38px, 7vw, 54px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+}
+
+.astryx-onboarding .astryx-text[data-type='large'] {
+  margin-top: 14px;
+  line-height: 1.55;
+}
+
+.astryx-option-content {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.astryx-radio {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-border-emphasized);
+  border-radius: 999px;
+  background: var(--color-background-surface);
+  box-shadow: inset 0 0 0 5px var(--color-background-surface);
+}
+
+.astryx-radio.is-selected {
+  background: #14231e;
+}
+
+.astryx-tag {
+  display: inline-flex;
+  border-radius: 999px;
+}
+
+.astryx-tag.is-clickable {
+  cursor: pointer;
+}
+
+.astryx-inline-action {
+  display: inline-flex;
+  min-height: 42px;
+  margin-top: 8px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--color-accent);
+  padding: 0 18px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Normalize existing product routes onto Astryx foundations. */
+.rack-astryx-shell main > section:not(.astryx-final):not(.astryx-process),
+.rack-astryx-shell main > div {
+  background-color: var(--color-background-body);
+}
+
+.rack-astryx-shell .riot-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+  background: var(--color-background-card);
+  box-shadow: var(--shadow-low);
+}
+
+.rack-astryx-shell input,
+.rack-astryx-shell select,
+.rack-astryx-shell textarea {
+  min-height: 48px;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-element) !important;
+  background: var(--color-background-surface) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.rack-astryx-shell textarea {
+  min-height: 120px;
+}
+
+.rack-astryx-shell input:focus,
+.rack-astryx-shell select:focus,
+.rack-astryx-shell textarea:focus {
+  border-color: var(--color-border-emphasized) !important;
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.rack-astryx-shell h1,
+.rack-astryx-shell h2,
+.rack-astryx-shell h3 {
+  color: var(--color-text-primary);
+}
+
+.rack-astryx-shell .bg-white {
+  background-color: var(--color-background-surface);
+}
+
+.rack-astryx-shell .bg-\[\#0D1B2A\] {
+  background-color: #14231e !important;
+}
+
+.rack-astryx-shell .bg-atelier-forest {
+  background-color: #14231e !important;
+}
+
+.rack-astryx-shell .bg-atelier-forest .font-editorial {
+  color: #fffdf8 !important;
+}
+
+.rack-astryx-shell .bg-atelier-forest .font-editorial .text-atelier-citrus {
+  color: #feee7b !important;
+}
+
+.rack-astryx-shell .rounded-md,
+.rack-astryx-shell .rounded-lg,
+.rack-astryx-shell .rounded-\[18px\],
+.rack-astryx-shell .rounded-\[20px\],
+.rack-astryx-shell .rounded-\[24px\],
+.rack-astryx-shell .rounded-\[28px\] {
+  border-radius: var(--radius-container);
+}
+
+.rack-astryx-shell .bg-riotAccent {
+  background-color: var(--color-accent);
+}
+
+.rack-astryx-shell .text-riotAccent {
+  color: var(--color-accent);
+}
+
+@media (min-width: 640px) {
+  .astryx-footer-meta {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .astryx-desktop-nav {
+    display: flex;
+  }
+
+  .astryx-menu-button,
+  .astryx-mobile-nav {
+    display: none;
+  }
+
+  .astryx-footer-main {
+    grid-template-columns: 1fr auto;
+    align-items: end;
   }
 }
 

@@ -1,27 +1,24 @@
 import TagPill from './TagPill';
+import { Button } from '@astryxdesign/core/Button';
+import { Card } from '@astryxdesign/core/Card';
+import { Text } from '@astryxdesign/core/Text';
 
 export default function BuddyCard({ buddy, onMatch }) {
   return (
-    <article className="riot-card h-full">
+    <Card padding={5} height="100%">
       <img src={buddy.avatar_url} alt={buddy.full_name} className="h-48 w-full rounded-lg object-cover" />
       <div className="mt-4 space-y-2">
-        <h3 className="text-xl font-semibold">{buddy.full_name}</h3>
-        <p className="text-sm text-riotText/80">{buddy.city}</p>
+        <Text type="large" as="h3" weight="bold">{buddy.full_name}</Text>
+        <Text type="supporting" as="p">{buddy.city}</Text>
         <div className="flex flex-wrap gap-2">
           {(buddy.style_tags || []).map((tag) => (
             <TagPill key={tag} label={`#${tag}`} />
           ))}
         </div>
-        <p className="text-sm text-riotText/80">Favorite stores: {(buddy.favorite_stores || []).join(', ') || 'None listed'}</p>
-        <p className="font-semibold text-riotAccent">Match {buddy.match_score || 0}%</p>
-        <button
-          onClick={() => onMatch(buddy)}
-          disabled={Boolean(buddy.pending)}
-          className="mt-2 inline-flex rounded-md bg-riotAccent px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {buddy.pending ? 'Pending' : 'Match'}
-        </button>
+        <Text type="supporting" as="p">Favorite stores: {(buddy.favorite_stores || []).join(', ') || 'None listed'}</Text>
+        <Text type="label" color="accent">Match {buddy.match_score || 0}%</Text>
+        <Button label={buddy.pending ? 'Pending' : 'Request match'} variant="primary" isDisabled={Boolean(buddy.pending)} onClick={() => onMatch(buddy)} />
       </div>
-    </article>
+    </Card>
   );
 }

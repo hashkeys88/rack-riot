@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { Tab, TabList } from '@astryxdesign/core/TabList';
 import TagPill from '../components/TagPill';
 import { useAuth } from '../context/AuthContext';
 import mockStylists from '../data/mockStylists';
@@ -701,16 +702,10 @@ export default function Dashboard() {
         </article>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap gap-x-7 gap-y-2 border-y border-atelier-ink/15 bg-transparent px-0">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-0 py-4 text-[12px] font-bold uppercase tracking-[0.08em] transition ${activeTab === tab.id ? 'border-b-2 border-atelier-rust text-atelier-ink' : 'text-atelier-muted hover:text-atelier-rust'}`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="mt-10">
+        <TabList value={activeTab} onChange={setActiveTab} size="lg" hasDivider>
+          {tabs.map((tab) => <Tab key={tab.id} value={tab.id} label={tab.label} />)}
+        </TabList>
       </div>
 
       {activeTab === 'bookings' ? (

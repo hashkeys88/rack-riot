@@ -1,4 +1,7 @@
 import { Link } from 'react-router-dom';
+import { Card } from '@astryxdesign/core/Card';
+import { Badge } from '@astryxdesign/core/Badge';
+import { Text } from '@astryxdesign/core/Text';
 import TagPill from './TagPill';
 
 function seededAvatar(id) {
@@ -24,7 +27,7 @@ function getStylistName(stylist) {
 
 export default function StyleCard({ stylist }) {
   return (
-    <article className="riot-card h-full">
+    <Card padding={5} height="100%">
       <img
         src={getAvatar(stylist)}
         alt={getStylistName(stylist)}
@@ -34,19 +37,19 @@ export default function StyleCard({ stylist }) {
         className="mx-auto h-[200px] w-full rounded-lg object-cover object-top sm:w-[200px]"
       />
       <div className="mt-4 space-y-2">
-        <h3 className="text-[16px] font-semibold">{getStylistName(stylist)}</h3>
-        <p className="text-[13px] text-riotText/70">{stylist.users?.city || stylist.city}</p>
+        <Text type="large" as="h3" weight="bold">{getStylistName(stylist)}</Text>
+        <Text type="supporting" as="p">{stylist.users?.city || stylist.city}</Text>
         <div className="flex flex-wrap gap-2">
           {((stylist.specialty_tags && stylist.specialty_tags.length ? stylist.specialty_tags : stylist.users?.style_tags) || []).map((tag) => (
             <TagPill key={tag} label={`#${tag}`} />
           ))}
         </div>
-        <p className="text-[12px] text-riotText/80">⭐ {stylist.rating || 0} ({stylist.review_count || 0} reviews)</p>
-        <p className="text-[13px] font-medium text-riotAccent">Group ${stylist.price_group || 150}</p>
-        <Link to={`/book/${stylist.id}`} className="mt-2 inline-flex rounded-md bg-riotAccent px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90">
-          Book
+        <Badge variant="yellow" label={`★ ${stylist.rating || 0} · ${stylist.review_count || 0} reviews`} />
+        <Text type="label" color="accent">Group ${stylist.price_group || 150}</Text>
+        <Link to={`/book/${stylist.id}`} className="astryx-inline-action">
+          Book a session
         </Link>
       </div>
-    </article>
+    </Card>
   );
 }

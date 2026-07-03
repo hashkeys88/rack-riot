@@ -3,6 +3,8 @@ import { Link, Navigate } from 'react-router-dom';
 import { dashboardPathForRole, resolveAccountRole } from '../lib/accountRole';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { Button } from '@astryxdesign/core/Button';
+import { Text } from '@astryxdesign/core/Text';
 
 export default function Login() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -103,8 +105,8 @@ export default function Login() {
         <div className="flex items-center p-7 sm:p-12 lg:p-16">
           <form onSubmit={handleLogin} className="w-full">
             <p className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-atelier-rust">Welcome back</p>
-            <h1 className="mt-4 text-[46px] font-semibold leading-none tracking-[-0.04em] text-atelier-ink">Log in</h1>
-            <p className="mt-4 text-[15px] leading-7 text-atelier-muted">Use the email and password connected to your Rack Riot account.</p>
+            <div className="mt-4"><Text type="display-2" as="h1">Log in</Text></div>
+            <div className="mt-4"><Text type="large" as="p" color="secondary">Use the email and password connected to your Rack Riot account.</Text></div>
 
             <div className="space-y-5">
               <label htmlFor="login-email" className="block">
@@ -149,14 +151,12 @@ export default function Login() {
             {error ? <p role="alert" className="mt-5 border-l-2 border-riotError bg-red-50 px-4 py-3 text-[14px] font-semibold text-riotError">{error}</p> : null}
             {notice ? <p role="status" className="mt-5 border-l-2 border-riotSuccess bg-emerald-50 px-4 py-3 text-[14px] font-semibold leading-6 text-emerald-800">{notice}</p> : null}
 
-            <button type="submit" disabled={loading} className="atelier-button atelier-button-primary mt-7 w-full disabled:cursor-not-allowed disabled:opacity-60">
-              {loading ? 'Logging in...' : 'Enter Rack Riot'}
-            </button>
+            <div className="mt-7">
+              <Button type="submit" label="Enter Rack Riot" variant="primary" size="lg" isLoading={loading} className="w-full" />
+            </div>
 
             <div className="mt-5 flex flex-col items-center justify-between gap-4 text-[13px] sm:flex-row">
-              <button type="button" onClick={handleReset} disabled={sendingReset} className="font-bold text-atelier-rust transition hover:underline disabled:opacity-60">
-                {sendingReset ? 'Sending reset link...' : 'Forgot password?'}
-              </button>
+              <Button type="button" label="Forgot password?" variant="ghost" size="sm" isLoading={sendingReset} onClick={handleReset} />
               <p className="text-atelier-muted">
                 New here? <Link to="/signup/client" className="font-bold text-atelier-ink underline decoration-atelier-rust underline-offset-4">Start a match</Link>
               </p>

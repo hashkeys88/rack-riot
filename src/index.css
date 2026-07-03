@@ -1,3 +1,7 @@
+@import '@astryxdesign/core/reset.css';
+@import '@astryxdesign/core/astryx.css';
+@import '@astryxdesign/theme-butter/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,6 +19,269 @@
   --rust: #ff6b6b;
   --clay: #a8e6cf;
   --error: #c53d52;
+}
+
+.rack-astryx-shell {
+  --color-accent: #e84e3d;
+  --color-background-body: #f4f0e7;
+  --color-background-surface: #fffdf8;
+  --color-background-card: #fffdf8;
+  --color-text-primary: #14231e;
+  --color-text-secondary: #5e6963;
+  --color-border: #d7d8cf;
+  --color-border-emphasized: #14231e;
+  min-height: 100vh;
+  background: var(--color-background-body);
+  color: var(--color-text-primary);
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.astryx-home {
+  overflow: hidden;
+  background: var(--color-background-body);
+}
+
+.astryx-hero {
+  position: relative;
+  display: grid;
+  min-height: calc(100vh - 76px);
+  border-bottom: 1px solid var(--color-border-emphasized);
+  background: #f4f0e7;
+}
+
+.astryx-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 28px;
+  padding: 64px 7vw;
+}
+
+.astryx-hero-copy .astryx-text[data-type='display-1'] {
+  max-width: 720px;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(56px, 7vw, 108px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+}
+
+.astryx-hero-copy > .astryx-text[data-type='large'] {
+  max-width: 620px;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.55;
+}
+
+.astryx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.astryx-actions .astryx-button,
+.astryx-final .astryx-button {
+  min-height: 48px;
+  border-radius: 999px;
+  padding-inline: 24px;
+}
+
+.astryx-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+}
+
+.astryx-hero-visual {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
+  background: #225bff;
+}
+
+.astryx-hero-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.astryx-image-note {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  max-width: 260px;
+  border: 1px solid #14231e;
+  border-radius: 999px;
+  background: #feee7b;
+  padding: 12px 18px;
+  color: #14231e;
+  box-shadow: 4px 4px 0 #14231e;
+}
+
+.astryx-scroll-cue {
+  display: none;
+}
+
+.astryx-section {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 112px 5vw;
+}
+
+.astryx-section-heading {
+  display: grid;
+  gap: 32px;
+  align-items: end;
+}
+
+.astryx-section-heading h2,
+.astryx-process h2,
+.astryx-final h2 {
+  margin-top: 20px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+}
+
+.astryx-section-heading h2 {
+  max-width: 780px;
+  font-size: clamp(48px, 6vw, 84px);
+}
+
+.astryx-section-heading > p {
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+.astryx-occasion-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 56px;
+}
+
+.astryx-occasion-grid .astryx-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.astryx-occasion-grid .astryx-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 18px 40px rgba(20, 35, 30, 0.14);
+}
+
+.astryx-card-copy {
+  display: grid;
+  gap: 12px;
+}
+
+.astryx-card-copy h3 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.astryx-process {
+  display: grid;
+  gap: 64px;
+  padding: 112px 7vw;
+  background: #14231e;
+  color: #fffdf8;
+}
+
+.astryx-process-intro h2 {
+  max-width: 780px;
+  font-size: clamp(48px, 6vw, 82px);
+}
+
+.astryx-step-list {
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+.astryx-step {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 20px;
+  align-items: start;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  padding: 28px 0;
+}
+
+.astryx-step h3 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.astryx-step p {
+  max-width: 620px;
+  margin-top: 8px;
+  color: rgba(255,255,255,0.68);
+}
+
+.astryx-check {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 999px;
+  background: #feee7b;
+  color: #14231e;
+}
+
+.astryx-final {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  padding: 120px 6vw;
+  background: #e84e3d;
+  color: #fff;
+  text-align: center;
+}
+
+.astryx-final h2 {
+  max-width: 960px;
+  font-size: clamp(52px, 7vw, 100px);
+}
+
+@media (min-width: 768px) {
+  .astryx-occasion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .astryx-hero {
+    grid-template-columns: 0.95fr 1.05fr;
+  }
+
+  .astryx-section-heading {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+
+  .astryx-occasion-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .astryx-process {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+
+  .astryx-scroll-cue {
+    position: absolute;
+    bottom: 24px;
+    left: 7vw;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-primary);
+    font-size: 12px;
+    font-weight: 700;
+  }
 }
 
 * {

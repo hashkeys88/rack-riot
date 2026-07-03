@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { Theme } from '@astryxdesign/core/theme';
+import { butterTheme } from '@astryxdesign/theme-butter/built';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Footer from './components/Footer';
@@ -11,7 +13,7 @@ import AuthCallback from './pages/AuthCallback';
 import Book from './pages/Book';
 import Buddies from './pages/Buddies';
 import Dashboard from './pages/Dashboard';
-import Home from './pages/HomeWhimsical';
+import Home from './pages/HomeAstryx';
 import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import Signup from './pages/Signup';
@@ -21,9 +23,10 @@ import StylistDashboard from './pages/StylistDashboard';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-riotBg text-riotText">
+    <Theme theme={butterTheme} mode="light">
+      <AuthProvider>
+        <Router>
+          <div className="rack-astryx-shell min-h-screen">
           <Navbar />
           <main>
             <Routes>
@@ -74,8 +77,9 @@ export default function App() {
           </main>
           <Footer />
           <ToastContainer theme="light" position="top-center" autoClose={3500} />
-        </div>
-      </Router>
-    </AuthProvider>
+          </div>
+        </Router>
+      </AuthProvider>
+    </Theme>
   );
 }

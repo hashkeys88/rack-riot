@@ -3,7 +3,6 @@ import { Link, Navigate } from 'react-router-dom';
 import { dashboardPathForRole, resolveAccountRole } from '../lib/accountRole';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import GoogleAuthButton from '../components/GoogleAuthButton';
 
 export default function Login() {
   const { user, profile, loading: authLoading } = useAuth();
@@ -93,12 +92,6 @@ export default function Login() {
         </div>
 
         <div className="space-y-4 p-7 md:p-10">
-        <GoogleAuthButton onError={setError} />
-        <div className="my-5 flex items-center gap-4" aria-hidden="true">
-          <span className="h-px flex-1 bg-riotBorder" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-riotTextSecondary">or use email</span>
-          <span className="h-px flex-1 bg-riotBorder" />
-        </div>
         <input
           value={email}
           type="email"
